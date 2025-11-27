@@ -53,16 +53,23 @@ def get_driver():
         driver = uc.Chrome(options=options)
     return driver
 
-def fetch_page(url, use_browser=False):
+def fetch_page(url, use_browser=False, validator=None):
+    def is_valid(soup):
+        return validator is None or validator(soup)
+
     if not use_browser and url in page_cache:
-        return BeautifulSoup(page_cache[url], "html.parser")
+        cached_soup = BeautifulSoup(page_cache[url], "html.parser")
+        if is_valid(cached_soup):
+            return cached_soup
 
     if not use_browser:
         try:
             response = requests_session.get(url, timeout=10)
             response.raise_for_status()
-            page_cache[url] = response.text
-            return BeautifulSoup(response.text, "html.parser")
+            soup = BeautifulSoup(response.text, "html.parser")
+            if is_valid(soup):
+                page_cache[url] = response.text
+                return soup
         except requests.RequestException:
             # Fall back to browser fetch if the HTTP request fails (e.g., bot protection).
             pass
@@ -74,7 +81,10 @@ def fetch_page(url, use_browser=False):
     return BeautifulSoup(html, "html.parser")
 
 def get_valve_points(url):
-    html = fetch_page(url)
+    html = fetch_page(
+        url,
+        validator=lambda soup: soup.find(class_='teamLineExpanded') is not None or soup.find_all(class_='points'),
+    )
     item = html.find(class_='teamLineExpanded')
     if item is None:
         item = html.find_all(class_='points')[-1]
@@ -84,7 +94,7 @@ def get_valve_points(url):
     return pts
 
 def get_winrate(url):
-    html = fetch_page(url)
+    html = fetch_page(url, validator=lambda soup: len(soup.find_all(class_='large-strong')) > 1)
     stats = html.find_all(class_='large-strong')[1].text
     w, d, l = map(int, stats.split(" / "))
     if w + d + l == 0:
@@ -92,7 +102,7 @@ def get_winrate(url):
     return round(w / (w + d + l) * 100, 1)
 
 def get_map_winrate(url):
-    html = fetch_page(url)
+    html = fetch_page(url, validator=lambda soup: len(soup.find_all(class_='stats-row')) > 1)
     map_stats = html.find_all(class_='stats-row')[1].find_all('span')[1].text
     w, d, l = map(int, map_stats.split(" / "))
     if w + d + l == 0:
@@ -101,7 +111,7 @@ def get_map_winrate(url):
 
 def get_player_stats(name, player_id, date):
     url = f"https://www.hltv.org/stats/players/matches/{player_id}/{name}?startDate={(date - timedelta(days=90)).strftime('%Y-%m-%d')}&endDate={date.strftime('%Y-%m-%d')}"
-    html = fetch_page(url)
+    html = fetch_page(url, validator=lambda soup: soup.find(class_='stats-table') is not None)
     matches = html.find(class_='stats-table').find_all("tr", class_=["group-1", "group-2"], limit=10)
     stats = []
     for match in matches:
@@ -112,15 +122,18 @@ def get_player_stats(name, player_id, date):
     return stats
 
 def get_head_to_head_stats(url):
-    html = fetch_page(url)
+    html = fetch_page(url, validator=lambda soup: soup.find(class_='head-to-head') is not None)
     head_to_head_item = html.find(class_='head-to-head')
     stats = head_to_head_item.find_all(class_='bold')
     w1, overtimes, w2 = [int(stat.text) for stat in stats]
     return [w1, w2]
 
 def get_recent_matches(name, team_id, date):
-    url = f"https://www.hltv.org/stats/teams/matches/{team_id}/{name}?startDate={(date - timedelta(days=90)).strftime('%Y-%m-%d')}&endDate={date.strftime('%Y-%m-%d')}"
-    html = fetch_page(url)
+    url = (
+        f"https://www.hltv.org/stats/teams/matches/{team_id}/{name}?startDate={(date - timedelta(days=90)).strftime('%Y-%m-%d')}"
+        f"&endDate={date.strftime('%Y-%m-%d')}"
+    )
+    html = fetch_page(url, validator=lambda soup: soup.find(class_='stats-table') is not None)
     matches = html.find(class_='stats-table').find_all("tr", class_=["group-1", "group-2"], limit=10)
     recent_matches_list = []
     for match in matches:
@@ -130,7 +143,7 @@ def get_recent_matches(name, team_id, date):
     return recent_matches_list
 
 def prepare_match_all_maps(url):
-    html = fetch_page(url)
+    html = fetch_page(url, validator=lambda soup: soup.find(class_='date') is not None)
     unix = int(html.find(class_='date')['data-unix']) / 1000
     date = datetime.fromtimestamp(unix) - timedelta(days=1)
     
