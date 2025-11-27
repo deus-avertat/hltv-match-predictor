@@ -1,0 +1,3050 @@
+[
+    {
+        "date": "2025-06-09",
+        "map": "Inferno",
+        "team1": {
+            "name": "falcons",
+            "valve_points": 1891,
+            "win_rate": 37.5,
+            "map_win_rate": 0.0,
+            "recent_matches": [
+                "L",
+                "L",
+                "L",
+                "W",
+                "W",
+                "W",
+                "L",
+                "L"
+            ],
+            "players": [
+                {
+                    "name": "m0nesy",
+                    "stats": [
+                        {
+                            "rating2.0": 1.21,
+                            "kd": 1.15,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.32,
+                            "kd": 1.27,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.6,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.56,
+                            "kd": 1.78,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.34,
+                            "kd": 2.1,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.87,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.57,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "kyxsan",
+                    "stats": [
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.04,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.01,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.14,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.04,
+                            "kd": 1.0,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.63,
+                            "kd": 0.44,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.77,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.82,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "magisk",
+                    "stats": [
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.93,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 0.69,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.46,
+                            "kd": 1.36,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.93,
+                            "kd": 3.33,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.87,
+                            "kd": 0.92,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.39,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.0,
+                            "kd": 1.13,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.49,
+                            "kd": 0.29,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "niko",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.75,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.24,
+                            "kd": 1.2,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.19,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.5,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.38,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.09,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.06,
+                            "kd": 1.14,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "teses",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.96,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.9,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.48,
+                            "kd": 1.33,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.53,
+                            "kd": 1.42,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.23,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.71,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.98,
+                            "kd": 1.15,
+                            "map": "Ancient"
+                        }
+                    ]
+                }
+            ]
+        },
+        "team2": {
+            "name": "mibr",
+            "valve_points": 1353,
+            "win_rate": 57.1,
+            "map_win_rate": 100.0,
+            "recent_matches": [
+                "L",
+                "L",
+                "W",
+                "W",
+                "L",
+                "W",
+                "W"
+            ],
+            "players": [
+                {
+                    "name": "insani",
+                    "stats": [
+                        {
+                            "rating2.0": 1.23,
+                            "kd": 1.19,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.5,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.21,
+                            "kd": 1.19,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.81,
+                            "kd": 0.73,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.07,
+                            "kd": 1.0,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 1.52,
+                            "kd": 1.61,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.88,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "saffee",
+                    "stats": [
+                        {
+                            "rating2.0": 1.03,
+                            "kd": 1.18,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.99,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.47,
+                            "kd": 0.36,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.23,
+                            "kd": 1.45,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.18,
+                            "kd": 1.7,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 0.55,
+                            "kd": 0.44,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.75,
+                            "kd": 0.61,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "brnz4n",
+                    "stats": [
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 1.0,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.28,
+                            "kd": 1.2,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.39,
+                            "kd": 0.31,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.87,
+                            "kd": 0.86,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.05,
+                            "kd": 1.21,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 1.32,
+                            "kd": 1.53,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.98,
+                            "kd": 0.94,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "exit",
+                    "stats": [
+                        {
+                            "rating2.0": 0.88,
+                            "kd": 0.95,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.93,
+                            "kd": 1.08,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.69,
+                            "kd": 0.64,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.23,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.0,
+                            "kd": 0.93,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.8,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "lucaozy",
+                    "stats": [
+                        {
+                            "rating2.0": 0.82,
+                            "kd": 0.83,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.3,
+                            "kd": 1.33,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.09,
+                            "kd": 1.31,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.88,
+                            "kd": 1.08,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.49,
+                            "kd": 1.57,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 0.8,
+                            "kd": 0.62,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.8,
+                            "kd": 0.76,
+                            "map": "Nuke"
+                        }
+                    ]
+                }
+            ]
+        },
+        "head_to_head": {
+            "team1_winrate": 0,
+            "team2_winrate": 0
+        },
+        "result": "team2"
+    },
+    {
+        "date": "2025-06-09",
+        "map": "Nuke",
+        "team1": {
+            "name": "falcons",
+            "valve_points": 1891,
+            "win_rate": 37.5,
+            "map_win_rate": 33.3,
+            "recent_matches": [
+                "L",
+                "L",
+                "L",
+                "W",
+                "W",
+                "W",
+                "L",
+                "L"
+            ],
+            "players": [
+                {
+                    "name": "m0nesy",
+                    "stats": [
+                        {
+                            "rating2.0": 1.21,
+                            "kd": 1.15,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.32,
+                            "kd": 1.27,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.6,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.56,
+                            "kd": 1.78,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.34,
+                            "kd": 2.1,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.87,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.57,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "niko",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.75,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.24,
+                            "kd": 1.2,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.19,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.5,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.38,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.09,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.06,
+                            "kd": 1.14,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "kyxsan",
+                    "stats": [
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.04,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.01,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.14,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.04,
+                            "kd": 1.0,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.63,
+                            "kd": 0.44,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.77,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.82,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "teses",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.96,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.9,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.48,
+                            "kd": 1.33,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.53,
+                            "kd": 1.42,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.23,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.71,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.98,
+                            "kd": 1.15,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "magisk",
+                    "stats": [
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.93,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 0.69,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.46,
+                            "kd": 1.36,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.93,
+                            "kd": 3.33,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.87,
+                            "kd": 0.92,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.39,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.0,
+                            "kd": 1.13,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.49,
+                            "kd": 0.29,
+                            "map": "Ancient"
+                        }
+                    ]
+                }
+            ]
+        },
+        "team2": {
+            "name": "mibr",
+            "valve_points": 1353,
+            "win_rate": 57.1,
+            "map_win_rate": 50.0,
+            "recent_matches": [
+                "L",
+                "L",
+                "W",
+                "W",
+                "L",
+                "W",
+                "W"
+            ],
+            "players": [
+                {
+                    "name": "lucaozy",
+                    "stats": [
+                        {
+                            "rating2.0": 0.82,
+                            "kd": 0.83,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.3,
+                            "kd": 1.33,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.09,
+                            "kd": 1.31,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.88,
+                            "kd": 1.08,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.49,
+                            "kd": 1.57,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 0.8,
+                            "kd": 0.62,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.8,
+                            "kd": 0.76,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "brnz4n",
+                    "stats": [
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 1.0,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.28,
+                            "kd": 1.2,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.39,
+                            "kd": 0.31,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.87,
+                            "kd": 0.86,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.05,
+                            "kd": 1.21,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 1.32,
+                            "kd": 1.53,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.98,
+                            "kd": 0.94,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "saffee",
+                    "stats": [
+                        {
+                            "rating2.0": 1.03,
+                            "kd": 1.18,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.99,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.47,
+                            "kd": 0.36,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.23,
+                            "kd": 1.45,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.18,
+                            "kd": 1.7,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 0.55,
+                            "kd": 0.44,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.75,
+                            "kd": 0.61,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "exit",
+                    "stats": [
+                        {
+                            "rating2.0": 0.88,
+                            "kd": 0.95,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.93,
+                            "kd": 1.08,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.69,
+                            "kd": 0.64,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.23,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.0,
+                            "kd": 0.93,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.8,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "insani",
+                    "stats": [
+                        {
+                            "rating2.0": 1.23,
+                            "kd": 1.19,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.5,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.21,
+                            "kd": 1.19,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.81,
+                            "kd": 0.73,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.07,
+                            "kd": 1.0,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 1.52,
+                            "kd": 1.61,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.88,
+                            "map": "Nuke"
+                        }
+                    ]
+                }
+            ]
+        },
+        "head_to_head": {
+            "team1_winrate": 0,
+            "team2_winrate": 0
+        },
+        "result": "team2"
+    },
+    {
+        "date": "2025-06-09",
+        "map": "Ancient",
+        "team1": {
+            "name": "falcons",
+            "valve_points": 1891,
+            "win_rate": 37.5,
+            "map_win_rate": 50.0,
+            "recent_matches": [
+                "L",
+                "L",
+                "L",
+                "W",
+                "W",
+                "W",
+                "L",
+                "L"
+            ],
+            "players": [
+                {
+                    "name": "teses",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.96,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.9,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.48,
+                            "kd": 1.33,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.53,
+                            "kd": 1.42,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.23,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.71,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.98,
+                            "kd": 1.15,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "magisk",
+                    "stats": [
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.93,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 0.69,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.46,
+                            "kd": 1.36,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.93,
+                            "kd": 3.33,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.87,
+                            "kd": 0.92,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.39,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.0,
+                            "kd": 1.13,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.49,
+                            "kd": 0.29,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "m0nesy",
+                    "stats": [
+                        {
+                            "rating2.0": 1.21,
+                            "kd": 1.15,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.32,
+                            "kd": 1.27,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.6,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.56,
+                            "kd": 1.78,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.34,
+                            "kd": 2.1,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.87,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.57,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "niko",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.75,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.24,
+                            "kd": 1.2,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.19,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.5,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.38,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.09,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.06,
+                            "kd": 1.14,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "kyxsan",
+                    "stats": [
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.04,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.01,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.14,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.04,
+                            "kd": 1.0,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.63,
+                            "kd": 0.44,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.77,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.82,
+                            "map": "Ancient"
+                        }
+                    ]
+                }
+            ]
+        },
+        "team2": {
+            "name": "mibr",
+            "valve_points": 1353,
+            "win_rate": 57.1,
+            "map_win_rate": 0.0,
+            "recent_matches": [
+                "L",
+                "L",
+                "W",
+                "W",
+                "L",
+                "W",
+                "W"
+            ],
+            "players": [
+                {
+                    "name": "insani",
+                    "stats": [
+                        {
+                            "rating2.0": 1.23,
+                            "kd": 1.19,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.5,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.21,
+                            "kd": 1.19,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.81,
+                            "kd": 0.73,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.07,
+                            "kd": 1.0,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 1.52,
+                            "kd": 1.61,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.88,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "lucaozy",
+                    "stats": [
+                        {
+                            "rating2.0": 0.82,
+                            "kd": 0.83,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.3,
+                            "kd": 1.33,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.09,
+                            "kd": 1.31,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.88,
+                            "kd": 1.08,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.49,
+                            "kd": 1.57,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 0.8,
+                            "kd": 0.62,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.8,
+                            "kd": 0.76,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "exit",
+                    "stats": [
+                        {
+                            "rating2.0": 0.88,
+                            "kd": 0.95,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.93,
+                            "kd": 1.08,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.69,
+                            "kd": 0.64,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.23,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.0,
+                            "kd": 0.93,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.8,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "saffee",
+                    "stats": [
+                        {
+                            "rating2.0": 1.03,
+                            "kd": 1.18,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.99,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.47,
+                            "kd": 0.36,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.23,
+                            "kd": 1.45,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.18,
+                            "kd": 1.7,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 0.55,
+                            "kd": 0.44,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.75,
+                            "kd": 0.61,
+                            "map": "Nuke"
+                        }
+                    ]
+                },
+                {
+                    "name": "brnz4n",
+                    "stats": [
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 1.0,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.28,
+                            "kd": 1.2,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.39,
+                            "kd": 0.31,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.87,
+                            "kd": 0.86,
+                            "map": "Anubis"
+                        },
+                        {
+                            "rating2.0": 1.05,
+                            "kd": 1.21,
+                            "map": "Train"
+                        },
+                        {
+                            "rating2.0": 1.32,
+                            "kd": 1.53,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.98,
+                            "kd": 0.94,
+                            "map": "Nuke"
+                        }
+                    ]
+                }
+            ]
+        },
+        "head_to_head": {
+            "team1_winrate": 0,
+            "team2_winrate": 0
+        },
+        "result": "team1"
+    },
+    {
+        "date": "2025-06-08",
+        "map": "Mirage",
+        "team1": {
+            "name": "og",
+            "valve_points": 1132,
+            "win_rate": 50.0,
+            "map_win_rate": 50.0,
+            "recent_matches": [
+                "W",
+                "L",
+                "W",
+                "W",
+                "W",
+                "L",
+                "L",
+                "W",
+                "L",
+                "L"
+            ],
+            "players": [
+                {
+                    "name": "f1ku",
+                    "stats": [
+                        {
+                            "rating2.0": 0.8,
+                            "kd": 0.8,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.76,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.55,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.74,
+                            "kd": 0.65,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.1,
+                            "kd": 0.86,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.55,
+                            "kd": 1.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.04,
+                            "kd": 1.18,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.75,
+                            "kd": 1.8,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.97,
+                            "kd": 0.88,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.62,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "spooke",
+                    "stats": [
+                        {
+                            "rating2.0": 0.77,
+                            "kd": 0.8,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.67,
+                            "kd": 0.5,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.13,
+                            "kd": 1.12,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.88,
+                            "kd": 0.75,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.77,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.65,
+                            "kd": 1.78,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.43,
+                            "kd": 1.6,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.73,
+                            "kd": 1.67,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.36,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.14,
+                            "kd": 0.62,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "nicoodoz",
+                    "stats": [
+                        {
+                            "rating2.0": 0.61,
+                            "kd": 0.57,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.82,
+                            "kd": 0.83,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.3,
+                            "kd": 1.5,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.2,
+                            "kd": 1.37,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.29,
+                            "kd": 0.31,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.6,
+                            "kd": 2.12,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.23,
+                            "kd": 1.55,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.87,
+                            "kd": 2.38,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.2,
+                            "kd": 1.38,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 3.08,
+                            "kd": 5.5,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "chr1zn",
+                    "stats": [
+                        {
+                            "rating2.0": 0.48,
+                            "kd": 0.41,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.93,
+                            "kd": 1.0,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.74,
+                            "kd": 0.65,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.68,
+                            "kd": 0.5,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.58,
+                            "kd": 0.5,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 2.2,
+                            "kd": 3.5,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.36,
+                            "kd": 1.5,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.49,
+                            "kd": 1.5,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.68,
+                            "kd": 0.56,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.2,
+                            "kd": 1.67,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "buzz",
+                    "stats": [
+                        {
+                            "rating2.0": 0.44,
+                            "kd": 0.41,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 1.08,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.82,
+                            "kd": 0.5,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.86,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.38,
+                            "kd": 0.15,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.93,
+                            "kd": 0.7,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.29,
+                            "kd": 1.33,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.99,
+                            "kd": 0.67,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.92,
+                            "kd": 0.79,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.27,
+                            "kd": 2.0,
+                            "map": "Ancient"
+                        }
+                    ]
+                }
+            ]
+        },
+        "team2": {
+            "name": "falcons",
+            "valve_points": 1891,
+            "win_rate": 37.5,
+            "map_win_rate": 100.0,
+            "recent_matches": [
+                "L",
+                "L",
+                "L",
+                "W",
+                "W",
+                "W",
+                "L",
+                "L"
+            ],
+            "players": [
+                {
+                    "name": "magisk",
+                    "stats": [
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.93,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 0.69,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.46,
+                            "kd": 1.36,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.93,
+                            "kd": 3.33,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.87,
+                            "kd": 0.92,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.39,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.0,
+                            "kd": 1.13,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.49,
+                            "kd": 0.29,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "m0nesy",
+                    "stats": [
+                        {
+                            "rating2.0": 1.21,
+                            "kd": 1.15,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.32,
+                            "kd": 1.27,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.6,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.56,
+                            "kd": 1.78,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.34,
+                            "kd": 2.1,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.87,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.57,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "teses",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.96,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.9,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.48,
+                            "kd": 1.33,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.53,
+                            "kd": 1.42,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.23,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.71,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.98,
+                            "kd": 1.15,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "niko",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.75,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.24,
+                            "kd": 1.2,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.19,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.5,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.38,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.09,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.06,
+                            "kd": 1.14,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "kyxsan",
+                    "stats": [
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.04,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.01,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.14,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.04,
+                            "kd": 1.0,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.63,
+                            "kd": 0.44,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.77,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.82,
+                            "map": "Ancient"
+                        }
+                    ]
+                }
+            ]
+        },
+        "head_to_head": {
+            "team1_winrate": 0,
+            "team2_winrate": 0
+        },
+        "result": "team2"
+    },
+    {
+        "date": "2025-06-08",
+        "map": "Nuke",
+        "team1": {
+            "name": "og",
+            "valve_points": 1132,
+            "win_rate": 50.0,
+            "map_win_rate": 50.0,
+            "recent_matches": [
+                "W",
+                "L",
+                "W",
+                "W",
+                "W",
+                "L",
+                "L",
+                "W",
+                "L",
+                "L"
+            ],
+            "players": [
+                {
+                    "name": "f1ku",
+                    "stats": [
+                        {
+                            "rating2.0": 0.8,
+                            "kd": 0.8,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.76,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.55,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.74,
+                            "kd": 0.65,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.1,
+                            "kd": 0.86,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.55,
+                            "kd": 1.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.04,
+                            "kd": 1.18,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.75,
+                            "kd": 1.8,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.97,
+                            "kd": 0.88,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.62,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "chr1zn",
+                    "stats": [
+                        {
+                            "rating2.0": 0.48,
+                            "kd": 0.41,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.93,
+                            "kd": 1.0,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.74,
+                            "kd": 0.65,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.68,
+                            "kd": 0.5,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.58,
+                            "kd": 0.5,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 2.2,
+                            "kd": 3.5,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.36,
+                            "kd": 1.5,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.49,
+                            "kd": 1.5,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.68,
+                            "kd": 0.56,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.2,
+                            "kd": 1.67,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "buzz",
+                    "stats": [
+                        {
+                            "rating2.0": 0.44,
+                            "kd": 0.41,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 1.08,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.82,
+                            "kd": 0.5,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.86,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.38,
+                            "kd": 0.15,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.93,
+                            "kd": 0.7,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.29,
+                            "kd": 1.33,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.99,
+                            "kd": 0.67,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.92,
+                            "kd": 0.79,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.27,
+                            "kd": 2.0,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "nicoodoz",
+                    "stats": [
+                        {
+                            "rating2.0": 0.61,
+                            "kd": 0.57,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.82,
+                            "kd": 0.83,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.3,
+                            "kd": 1.5,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.2,
+                            "kd": 1.37,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.29,
+                            "kd": 0.31,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.6,
+                            "kd": 2.12,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.23,
+                            "kd": 1.55,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.87,
+                            "kd": 2.38,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.2,
+                            "kd": 1.38,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 3.08,
+                            "kd": 5.5,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "spooke",
+                    "stats": [
+                        {
+                            "rating2.0": 0.77,
+                            "kd": 0.8,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.67,
+                            "kd": 0.5,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.13,
+                            "kd": 1.12,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.88,
+                            "kd": 0.75,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.77,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.65,
+                            "kd": 1.78,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.43,
+                            "kd": 1.6,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.73,
+                            "kd": 1.67,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.36,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.14,
+                            "kd": 0.62,
+                            "map": "Ancient"
+                        }
+                    ]
+                }
+            ]
+        },
+        "team2": {
+            "name": "falcons",
+            "valve_points": 1891,
+            "win_rate": 37.5,
+            "map_win_rate": 33.3,
+            "recent_matches": [
+                "L",
+                "L",
+                "L",
+                "W",
+                "W",
+                "W",
+                "L",
+                "L"
+            ],
+            "players": [
+                {
+                    "name": "m0nesy",
+                    "stats": [
+                        {
+                            "rating2.0": 1.21,
+                            "kd": 1.15,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.32,
+                            "kd": 1.27,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.6,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.56,
+                            "kd": 1.78,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.34,
+                            "kd": 2.1,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.87,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.57,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "niko",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.75,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.24,
+                            "kd": 1.2,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.19,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.5,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.38,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.09,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.06,
+                            "kd": 1.14,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "teses",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.96,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.9,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.48,
+                            "kd": 1.33,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.53,
+                            "kd": 1.42,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.23,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.71,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.98,
+                            "kd": 1.15,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "magisk",
+                    "stats": [
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.93,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 0.69,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.46,
+                            "kd": 1.36,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.93,
+                            "kd": 3.33,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.87,
+                            "kd": 0.92,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.39,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.0,
+                            "kd": 1.13,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.49,
+                            "kd": 0.29,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "kyxsan",
+                    "stats": [
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.04,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.01,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.14,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.04,
+                            "kd": 1.0,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.63,
+                            "kd": 0.44,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.77,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.82,
+                            "map": "Ancient"
+                        }
+                    ]
+                }
+            ]
+        },
+        "head_to_head": {
+            "team1_winrate": 0,
+            "team2_winrate": 0
+        },
+        "result": "team2"
+    },
+    {
+        "date": "2025-06-08",
+        "map": "Dust2",
+        "team1": {
+            "name": "og",
+            "valve_points": 1132,
+            "win_rate": 50.0,
+            "map_win_rate": 100.0,
+            "recent_matches": [
+                "W",
+                "L",
+                "W",
+                "W",
+                "W",
+                "L",
+                "L",
+                "W",
+                "L",
+                "L"
+            ],
+            "players": [
+                {
+                    "name": "nicoodoz",
+                    "stats": [
+                        {
+                            "rating2.0": 0.61,
+                            "kd": 0.57,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.82,
+                            "kd": 0.83,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.3,
+                            "kd": 1.5,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.2,
+                            "kd": 1.37,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.29,
+                            "kd": 0.31,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.6,
+                            "kd": 2.12,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.23,
+                            "kd": 1.55,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.87,
+                            "kd": 2.38,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.2,
+                            "kd": 1.38,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 3.08,
+                            "kd": 5.5,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "f1ku",
+                    "stats": [
+                        {
+                            "rating2.0": 0.8,
+                            "kd": 0.8,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.76,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.55,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.74,
+                            "kd": 0.65,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.1,
+                            "kd": 0.86,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.55,
+                            "kd": 1.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.04,
+                            "kd": 1.18,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.75,
+                            "kd": 1.8,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.97,
+                            "kd": 0.88,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.62,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "spooke",
+                    "stats": [
+                        {
+                            "rating2.0": 0.77,
+                            "kd": 0.8,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.67,
+                            "kd": 0.5,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.13,
+                            "kd": 1.12,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.88,
+                            "kd": 0.75,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.77,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.65,
+                            "kd": 1.78,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.43,
+                            "kd": 1.6,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.73,
+                            "kd": 1.67,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.36,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.14,
+                            "kd": 0.62,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "buzz",
+                    "stats": [
+                        {
+                            "rating2.0": 0.44,
+                            "kd": 0.41,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 1.08,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.82,
+                            "kd": 0.5,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.86,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.38,
+                            "kd": 0.15,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.93,
+                            "kd": 0.7,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.29,
+                            "kd": 1.33,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.99,
+                            "kd": 0.67,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.92,
+                            "kd": 0.79,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.27,
+                            "kd": 2.0,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "chr1zn",
+                    "stats": [
+                        {
+                            "rating2.0": 0.48,
+                            "kd": 0.41,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.93,
+                            "kd": 1.0,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.74,
+                            "kd": 0.65,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.68,
+                            "kd": 0.5,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.58,
+                            "kd": 0.5,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 2.2,
+                            "kd": 3.5,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.36,
+                            "kd": 1.5,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.49,
+                            "kd": 1.5,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 0.68,
+                            "kd": 0.56,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.2,
+                            "kd": 1.67,
+                            "map": "Ancient"
+                        }
+                    ]
+                }
+            ]
+        },
+        "team2": {
+            "name": "falcons",
+            "valve_points": 1891,
+            "win_rate": 37.5,
+            "map_win_rate": 0.0,
+            "recent_matches": [
+                "L",
+                "L",
+                "L",
+                "W",
+                "W",
+                "W",
+                "L",
+                "L"
+            ],
+            "players": [
+                {
+                    "name": "magisk",
+                    "stats": [
+                        {
+                            "rating2.0": 0.96,
+                            "kd": 0.93,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.89,
+                            "kd": 0.69,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.46,
+                            "kd": 1.36,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.93,
+                            "kd": 3.33,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.87,
+                            "kd": 0.92,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.39,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.0,
+                            "kd": 1.13,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.49,
+                            "kd": 0.29,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "niko",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.75,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.24,
+                            "kd": 1.2,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.19,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.5,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.38,
+                            "kd": 1.57,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 1.09,
+                            "kd": 1.07,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.06,
+                            "kd": 1.14,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "teses",
+                    "stats": [
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.96,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 0.9,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.48,
+                            "kd": 1.33,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.53,
+                            "kd": 1.42,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.15,
+                            "kd": 1.23,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.85,
+                            "kd": 0.71,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.98,
+                            "kd": 1.15,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "m0nesy",
+                    "stats": [
+                        {
+                            "rating2.0": 1.21,
+                            "kd": 1.15,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.32,
+                            "kd": 1.27,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.45,
+                            "kd": 1.6,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.56,
+                            "kd": 1.78,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 1.34,
+                            "kd": 2.1,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.87,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.7,
+                            "kd": 0.57,
+                            "map": "Ancient"
+                        }
+                    ]
+                },
+                {
+                    "name": "kyxsan",
+                    "stats": [
+                        {
+                            "rating2.0": 1.16,
+                            "kd": 1.04,
+                            "map": "Inferno"
+                        },
+                        {
+                            "rating2.0": 1.01,
+                            "kd": 0.93,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 1.14,
+                            "kd": 1.18,
+                            "map": "Ancient"
+                        },
+                        {
+                            "rating2.0": 1.04,
+                            "kd": 1.0,
+                            "map": "Mirage"
+                        },
+                        {
+                            "rating2.0": 0.83,
+                            "kd": 0.75,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.63,
+                            "kd": 0.44,
+                            "map": "Dust2"
+                        },
+                        {
+                            "rating2.0": 0.77,
+                            "kd": 0.71,
+                            "map": "Nuke"
+                        },
+                        {
+                            "rating2.0": 0.94,
+                            "kd": 0.82,
+                            "map": "Ancient"
+                        }
+                    ]
+                }
+            ]
+        },
+        "head_to_head": {
+            "team1_winrate": 0,
+            "team2_winrate": 0
+        },
+        "result": "team1"
+    }
+]
