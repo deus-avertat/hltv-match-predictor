@@ -22,7 +22,38 @@ map_team_dict = {
 }
 reverse_map_team_dict = {v: k for k, v in map_team_dict.items()}
 
+ADBLOCK_URLS = [
+    "*://*.googlesyndication.com/*",
+    "*://*.googleadservices.com/*",
+    "*://*.doubleclick.net/*",
+    "*://*.google-analytics.com/*",
+    "*://*.analytics.google.com/*",
+    "*://*.outbrain.com/*",
+    "*://*.amplify.outbrain.com/*",
+    "*://*.marfeel.com/*",
+    "*://*.mrf.io/*",
+    "*://*.liftdsp.com/*",
+    "*://*.ads-twitter.com/*",
+    "*://*.yahoo.com/*",
+    "*://*.yimg.com/*",
+    "*://*.cloudflareinsights.com/*",
+    "*://*.stripe.com/*",   # optional
+    "*://*.adservice.google.com/*",
+    "*://*.taboola.com/*",
+    "*://*.scorecardresearch.com/*",
+    "*://cadmus.script.ac/*",
+    "*://*.script.ac/*",
+    "*://*.script.ac/d23sa75evsxrsv/*",
+    "*://*.allstar.gg/*",
+]
+
 driver = uc.Chrome()
+
+# Enable Chrome DevTools Protocol
+driver.execute_cdp_cmd("Network.enable", {})
+
+# Block unwanted domains
+driver.execute_cdp_cmd("Network.setBlockedURLs", {"urls": ADBLOCK_URLS})
 
 def fetch_page(url):
     driver.get(url)
