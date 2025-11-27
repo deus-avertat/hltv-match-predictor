@@ -5,9 +5,10 @@ import random
 from bs4 import BeautifulSoup
 import undetected_chromedriver as uc
 from datetime import datetime, timedelta
+from functools import lru_cache
 
 # Configure logging
-logging.basicConfig(filename='scraper.log', level=logging.INFO, 
+logging.basicConfig(filename='scraper.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Dictionaries from original script
@@ -21,23 +22,31 @@ START_DATE = datetime(2025, 6, 3)
 END_DATE = datetime(2025, 6, 10)
 
 request_count = 0
+page_cache = {}
+REQUEST_DELAY_RANGE = (0.75, 1.75)
+MATCH_DELAY_RANGE = (1.5, 3.0)
 
 driver = uc.Chrome()
 
 def fetch_page(url):
     global request_count
+    if url in page_cache:
+        return page_cache[url]
+
     request_count += 1
-    
+
     # Pause for 10 minutes every 300 requests
     if request_count % 300 == 0:
         logging.info(f"Pausing for 10 minutes after {request_count} requests")
         time.sleep(600)
-    
-    time.sleep(random.uniform(2, 5))  # Random delay
+
+    time.sleep(random.uniform(*REQUEST_DELAY_RANGE))
     try:
         driver.get(url)
         html = driver.page_source
-        return BeautifulSoup(html, "html.parser")
+        soup = BeautifulSoup(html, "html.parser")
+        page_cache[url] = soup
+        return soup
     except Exception as e:
         logging.error(f"Error fetching {url}: {e}")
         return None
@@ -101,6 +110,7 @@ def get_map_winrate(url):
         return 0
     return round(w / (w + d + l) * 100, 1)
 
+@lru_cache(maxsize=256)
 def get_player_stats(name, player_id):
     url = f"https://www.hltv.org/stats/players/matches/{player_id}/{name}?startDate={START_DATE.strftime('%Y-%m-%d')}&endDate={END_DATE.strftime('%Y-%m-%d')}"
     html = fetch_page(url)
@@ -115,6 +125,7 @@ def get_player_stats(name, player_id):
         stats.append({"rating2.0": rating, "kd": round(k / d, 2), "map": map_player_dict.get(map_name, 'Unknown')})
     return stats
 
+@lru_cache(maxsize=128)
 def get_team_stats(name, team_id, map_code):
     stats_url_by_date = f"https://www.hltv.org/valve-ranking/teams/{START_DATE.year}/{month_dict[START_DATE.month]}/{START_DATE.day}?teamId={team_id}"
     valve_pts = get_valve_points(stats_url_by_date)
@@ -124,6 +135,7 @@ def get_team_stats(name, team_id, map_code):
     map_winrate = get_map_winrate(stats_map_url)
     return valve_pts, winrate, map_winrate
 
+@lru_cache(maxsize=128)
 def get_head_to_head_stats(url):
     html = fetch_page(url)
     if html is None:
@@ -135,6 +147,7 @@ def get_head_to_head_stats(url):
     w1, overtimes, w2 = [int(stat.text) for stat in stats]
     return [w1, w2]
 
+@lru_cache(maxsize=128)
 def get_recent_matches(name, team_id):
     url = f"https://www.hltv.org/stats/teams/matches/{team_id}/{name}?startDate={START_DATE.strftime('%Y-%m-%d')}&endDate={END_DATE.strftime('%Y-%m-%d')}"
     html = fetch_page(url)
@@ -232,7 +245,7 @@ def get_dataset_by_team_matches(url, count):
         processed_matches.append(match_url)
         save_processed_matches(processed_matches)
         print(f"Time taken: {round(time.time() - start)} seconds")
-        time.sleep(random.uniform(3, 7))  # Delay between matches
+        time.sleep(random.uniform(*MATCH_DELAY_RANGE))  # Delay between matches
 
 def create_dataset(count_teams):
     date = START_DATE
