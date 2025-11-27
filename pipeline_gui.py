@@ -1,12 +1,14 @@
+import json
 import joblib
 import numpy as np
 import pandas as pd
+import requests
 from bs4 import BeautifulSoup
-import undetected_chromedriver as uc
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 import tkinter as tk
 from tkinter import filedialog
-import json
+import undetected_chromedriver as uc
 
 # Dictionaries and global variables
 month_dict = {1: 'january', 2: 'february', 3: 'march', 4: 'april', 5: 'may', 6: 'june', 7: 'july', 8: 'august', 9: 'september', 10: 'october', 11: 'november', 12: 'december'}
@@ -17,16 +19,58 @@ map_player_dict = {
 }
 
 map_team_dict = {
-    'Dust2': 31, 'Mirage': 32, 'Inferno': 33, 'Nuke': 34, 
+    'Dust2': 31, 'Mirage': 32, 'Inferno': 33, 'Nuke': 34,
     'Train': 35, 'Overpass': 36, 'Ancient': 47
 }
 reverse_map_team_dict = {v: k for k, v in map_team_dict.items()}
 
-driver = uc.Chrome()
+requests_session = requests.Session()
+requests_session.headers.update({
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+    )
+})
 
-def fetch_page(url):
-    driver.get(url)
-    html = driver.page_source
+page_cache = {}
+driver = None
+
+
+def get_driver():
+    global driver
+    if driver is None:
+        options = uc.ChromeOptions()
+        options.add_argument("--headless=new")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--disable-extensions")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-sandbox")
+        prefs = {
+            "profile.managed_default_content_settings.images": 2,
+            "profile.managed_default_content_settings.stylesheets": 2,
+        }
+        options.add_experimental_option("prefs", prefs)
+        driver = uc.Chrome(options=options)
+    return driver
+
+def fetch_page(url, use_browser=False):
+    if not use_browser and url in page_cache:
+        return BeautifulSoup(page_cache[url], "html.parser")
+
+    if not use_browser:
+        try:
+            response = requests_session.get(url, timeout=10)
+            response.raise_for_status()
+            page_cache[url] = response.text
+            return BeautifulSoup(response.text, "html.parser")
+        except requests.RequestException:
+            # Fall back to browser fetch if the HTTP request fails (e.g., bot protection).
+            pass
+
+    driver_instance = get_driver()
+    driver_instance.get(url)
+    html = driver_instance.page_source
+    page_cache[url] = html
     return BeautifulSoup(html, "html.parser")
 
 def get_valve_points(url):
@@ -111,28 +155,23 @@ def prepare_match_all_maps(url):
     team1_players = html.find_all(class_='lineup')[0].find(class_='players').find_all('tr')[1].find_all(class_='player-compare')
     team2_players = html.find_all(class_='lineup')[1].find(class_='players').find_all('tr')[1].find_all(class_='player-compare')
     
-    team1_players_stats = []
-    for player in team1_players:
-        player_id = player['data-player-id']
-        player_name = player.text.strip()
+    def fetch_player_stats(player_row):
+        player_id = player_row['data-player-id']
+        player_name = player_row.text.strip()
         stats = get_player_stats(player_name, player_id, date)
-        team1_players_stats.append({"name": player_name, "stats": stats})
-    
-    team2_players_stats = []
-    for player in team2_players:
-        player_id = player['data-player-id']
-        player_name = player.text.strip()
-        stats = get_player_stats(player_name, player_id, date)
-        team2_players_stats.append({"name": player_name, "stats": stats})
+        return {"name": player_name, "stats": stats}
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        team1_players_stats = list(executor.map(fetch_player_stats, team1_players))
+        team2_players_stats = list(executor.map(fetch_player_stats, team2_players))
     
     # Predict for all maps
     all_maps = list(map_team_dict.keys())
-    predictions = []
-    for map_name in all_maps:
+    def predict_single_map(map_name):
         map_code = map_team_dict[map_name]
         team1_map_winrate = get_map_winrate(f'https://www.hltv.org/stats/teams/map/{map_code}/{team1_id}/{team1_name}?startDate={(date - timedelta(days=90)).strftime("%Y-%m-%d")}&endDate={date.strftime("%Y-%m-%d")}')
         team2_map_winrate = get_map_winrate(f'https://www.hltv.org/stats/teams/map/{map_code}/{team2_id}/{team2_name}?startDate={(date - timedelta(days=90)).strftime("%Y-%m-%d")}&endDate={date.strftime("%Y-%m-%d")}')
-        
+
         match_data = {
             "date": date.strftime('%Y-%m-%d'),
             "map": map_name,
@@ -157,18 +196,21 @@ def prepare_match_all_maps(url):
                 "team2_winrate": 0 if head_to_head_stats[0] + head_to_head_stats[1] == 0 else round(head_to_head_stats[1] / (head_to_head_stats[0] + head_to_head_stats[1]) * 100, 1)
             }
         }
-        
+
         features = process_match(match_data)
         probabilities = model.predict_proba(pd.DataFrame([features]))[0]
         team1_prob = probabilities[1] * 100
         team2_prob = probabilities[0] * 100
         predicted_winner = team1_name if team1_prob > team2_prob else team2_name
-        predictions.append({
+        return {
             "map": map_name,
             "predicted_winner": predicted_winner,
             "team1_prob": team1_prob,
             "team2_prob": team2_prob
-        })
+        }
+
+    with ThreadPoolExecutor(max_workers=len(all_maps)) as executor:
+        predictions = list(executor.map(predict_single_map, all_maps))
     
     match_code = url.split('/')[-2]
     return {
@@ -271,7 +313,8 @@ save_button.pack()
 current_results = None
 
 def on_closing():
-    driver.quit()
+    if driver is not None:
+        driver.quit()
     root.destroy()
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
