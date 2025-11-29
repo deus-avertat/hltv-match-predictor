@@ -1,4 +1,10 @@
+import os
+import platform
+import subprocess
 import threading
+import sqlite3
+import pickle
+import winreg
 
 import joblib
 import numpy as np
@@ -13,12 +19,15 @@ from tkinter import filedialog, ttk
 import json
 
 # --------------------------
+# GLOBAL VARS
+# --------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "model", "cs2_model.pkl")
+CACHE_DB = os.path.join(BASE_DIR, "data", "cache.db")
+
+# --------------------------
 # CACHING LAYER
 # --------------------------
-import sqlite3
-import pickle
-
-CACHE_DB = "data/cache.db"
 CACHE_EXPIRY_HOURS = 12
 
 # Initialize DB
@@ -398,7 +407,7 @@ def predict_all_maps():
     result_text.delete(1.0, tk.END)  # Clear previous results
     if status_cb:
         status_cb("Fetching data...", level="good")
-    progressbar.pack()
+    progressbar.grid()
     progressbar.start(10)
 
     try:
@@ -430,14 +439,14 @@ def predict_all_maps():
             result_text.insert(tk.END, f"{map_name} | {winner} | {team1_prob} | {team2_prob}\n")
 
         progressbar.stop()
-        progressbar.pack_forget()
+        progressbar.grid_remove()
         progress_var.set("Done")
         save_button.config(state=tk.NORMAL)
         global current_results
         current_results = match_results
     except Exception as e:
         progressbar.stop()
-        progressbar.pack_forget()
+        progressbar.grid_remove()
         progress_var.set("Error")
         if status_cb:
             status_cb(f"Error: {str(e)}", level="error")
@@ -520,10 +529,140 @@ def show_spider_chart():
     canvas.get_tk_widget().pack(fill='both', expand=True)
 
 # --------------------------
+# OTHER FUNCTIONS
+# --------------------------
+import subprocess
+import platform
+import winreg
+
+def detect_dark_mode():
+    system = platform.system()
+
+    # WINDOWS
+    if system == "Windows":
+        try:
+            registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
+            key = winreg.OpenKey(
+                registry,
+                r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+            )
+            value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
+            return value == 0  # 0 = Dark, 1 = Light
+        except:
+            return False  # fallback: assume light mode
+
+    # MACOS
+    elif system == "Darwin":
+        try:
+            output = subprocess.run(
+                ["defaults", "read", "-g", "AppleInterfaceStyle"],
+                capture_output=True, text=True
+            )
+            return "Dark" in output.stdout
+        except:
+            return False
+
+    # LINUX (GNOME)
+    elif system == "Linux":
+        try:
+            output = subprocess.run(
+                ["gsettings", "get", "org.gnome.desktop.interface", "color-scheme"],
+                capture_output=True, text=True
+            )
+            return "dark" in output.stdout.lower()
+        except:
+            return False
+
+    # FALLBACK
+    return False
+
+
+# --------------------------
 # GUI
 # --------------------------
 root = tk.Tk()
 root.title("CS:GO Match Predictor")
+
+# Set UI Theme
+style = ttk.Style(root)
+root.tk.call('source', os.path.join(BASE_DIR, "ui", "forest-light.tcl"))
+root.tk.call('source', os.path.join(BASE_DIR, "ui", "forest-dark.tcl"))
+is_dark = detect_dark_mode()
+ttk.Style(root).theme_use("forest-dark" if is_dark else "forest-light")
+
+# Windows
+def open_settings_window():
+    win = tk.Toplevel(root)
+    win.title("Settings")
+    win.geometry("400x460")
+
+    settings_path = os.path.join(BASE_DIR, "settings.json")
+    if os.path.exists(settings_path):
+        with open(settings_path, 'r') as f:
+            settings = json.load(f)
+    else:
+        settings = {
+            "cache_expiry_hours": CACHE_EXPIRY_HOURS,
+            "cache_db_path": CACHE_DB,
+            "model_path": MODEL_DIR
+        }
+
+    tk.Label(win, text="Settings Panel", font=("Arial", 14, "bold")).pack(pady=10)
+
+    # Cache Expiry
+    tk.Label(win, text="Cache Expiry (hours):").pack()
+    expiry_var = tk.StringVar(value=str(settings.get("cache_expiry_hours", CACHE_EXPIRY_HOURS)))
+    tk.Entry(win, textvariable=expiry_var).pack()
+
+    # Cache Directory
+    tk.Label(win, text="Cache DB Path:").pack()
+    cache_var = tk.StringVar(value=settings.get("cache_db_path", CACHE_DB))
+    cache_entry = tk.Entry(win, textvariable=cache_var, width=40)
+    cache_entry.pack()
+    ttk.Button(win, text="Browse", style="Accent.TButton", command=lambda: cache_var.set(filedialog.askopenfilename())).pack(pady=2)
+
+    # Model Directory
+    tk.Label(win, text="Model File (.pkl):").pack()
+    model_var = tk.StringVar(value=settings.get("model_path", MODEL_DIR))
+    model_entry = tk.Entry(win, textvariable=model_var, width=40)
+    model_entry.pack()
+    ttk.Button(win, text="Browse", style="Accent.TButton", command=lambda: model_var.set(filedialog.askopenfilename())).pack(pady=2)
+
+    def save_settings():
+        new_settings = {
+            "cache_expiry_hours": int(expiry_var.get()),
+            "cache_db_path": cache_var.get(),
+            "model_path": model_var.get()
+        }
+        with open(settings_path, 'w') as f:
+            json.dump(new_settings, f, indent=4)
+        global CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR
+        CACHE_EXPIRY_HOURS = new_settings["cache_expiry_hours"]
+        CACHE_DB = new_settings["cache_db_path"]
+        MODEL_DIR = new_settings["model_path"]
+        status_cb("Settings updated and saved.", level="good")
+        win.destroy()
+
+    ttk.Button(win, text="Save Settings", style="Accent.TButton", command=save_settings).pack(pady=10)
+    ttk.Button(win, text="Close", style="Accent.TButton", command=win.destroy).pack(pady=5)
+
+def close_main_window():
+    try:
+        driver.quit()
+    except:
+        pass
+    root.destroy()
+
+# Menu Bar
+menubar = tk.Menu(root)
+menubar.config(fg="white")
+root.config(menu=menubar)
+
+# File Menu
+file_menu = tk.Menu(menubar, tearoff=False)
+menubar.add_cascade(label="File", menu=file_menu)
+file_menu.add_command(label="Settings", command=open_settings_window)
+file_menu.add_command(label="Exit", command=close_main_window)
 
 # Clear previous embedded graph
 def clear_graph():
@@ -536,12 +675,12 @@ url_label.pack()
 url_entry = tk.Entry(root, width=50)
 url_entry.pack()
 
-predict_button = tk.Button(root, text="Predict All Maps", command=lambda: (clear_graph(), threading.Thread(target=predict_all_maps).start()))
-predict_button.pack()
+predict_button = ttk.Button(root, text="Predict All Maps", style="Accent.TButton", command=lambda: (clear_graph(), threading.Thread(target=predict_all_maps).start()))
+predict_button.pack(pady=5)
 
 # Set monospaced font and increased width
 result_text = tk.Text(root, height=20, width=100, font=('Courier', 10))
-result_text.tag_config('good', background='lawn green')
+result_text.tag_config('good', background='green')
 result_text.tag_config('info', background='white')
 result_text.tag_config('warn', background='yellow')
 result_text.tag_config('error', background='red3')
@@ -555,44 +694,52 @@ buttons_btm = tk.Frame(root)
 buttons_btm.pack()
 
 # Save Button
-save_button = tk.Button(buttons_top, text="Save to JSON", command=save_to_json, state=tk.DISABLED)
-save_button.grid(row=0, column=0, padx=10, pady=10)
+save_button = ttk.Button(buttons_top, text="Save to JSON", style="Accent.TButton", command=save_to_json, state=tk.DISABLED)
+save_button.grid(row=0, column=0, padx=5, pady=5)
 
 # Clear Cache Button
-clear_cache_button = tk.Button(buttons_top, text="Clear Cache", command=lambda: clear_cache())
-clear_cache_button.grid(row=0, column=1, padx=10, pady=10)
+clear_cache_button = ttk.Button(buttons_top, text="Clear Cache", style="Accent.TButton", command=lambda: clear_cache())
+clear_cache_button.grid(row=0, column=1, padx=5, pady=5)
 
 # View Cache Stats Button
-view_cache_button = tk.Button(buttons_top, text="View Cache Stats", command=lambda: view_cache_stats())
-view_cache_button.grid(row=0, column=2, padx=10, pady=10)
+view_cache_button = ttk.Button(buttons_top, text="View Cache Stats", style="Accent.TButton", command=lambda: view_cache_stats())
+view_cache_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Graph Buttons
-prob_chart_button = tk.Button(buttons_btm, text="Probability Chart", command=show_probability_chart)
-prob_chart_button.grid(row=0, column=0, padx=10, pady=10)
-spider_chart_button = tk.Button(buttons_btm, text="Spider Chart", command=show_spider_chart)
-spider_chart_button.grid(row=0, column=1, padx=10, pady=10)
+prob_chart_button = ttk.Button(buttons_btm, text="Probability Chart", style="Accent.TButton", command=show_probability_chart)
+prob_chart_button.grid(row=0, column=0, padx=5, pady=5)
+spider_chart_button = ttk.Button(buttons_btm, text="Spider Chart", style="Accent.TButton", command=show_spider_chart)
+spider_chart_button.grid(row=0, column=1, padx=5, pady=5)
 
 # Progress Bar
+progress_frame = tk.Frame(root)
+progress_frame.pack()
 progress_var = tk.StringVar(value="Idle")
-progress_label = tk.Label(root, textvariable=progress_var)
-progress_label.pack()
+progress_label = tk.Label(progress_frame, textvariable=progress_var)
+progress_label.grid(row=0, column=0, padx=5, pady=5)
 
-progressbar = ttk.Progressbar(root, mode="indeterminate")
-progressbar.pack()
+progressbar = ttk.Progressbar(progress_frame, mode="indeterminate")
+progressbar.grid(row=0, column=1, padx=5, pady=5)
 
 graph_frame = tk.Frame(root)
 graph_frame.pack(fill='both', expand=True)
 
 current_results = None
 
+# --------------------------
+# FINAL
+# --------------------------
 def on_closing():
-    driver.quit()
+    try:
+        driver.quit()
+    except:
+        pass
     root.destroy()
 
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
 # Load the model
-model = joblib.load('model/cs2_model.pkl')
+model = joblib.load(MODEL_DIR)
 
 root.mainloop()
