@@ -22,22 +22,128 @@ import json
 # GLOBAL VARS
 # --------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_DIR = os.path.join(BASE_DIR, "model", "cs2_model.pkl")
-CACHE_DB = os.path.join(BASE_DIR, "data", "cache.db")
+DEFAULT_MODEL_DIR = os.path.join(BASE_DIR, "model", "cs2_model.pkl")
+DEFAULT_CACHE_DB = os.path.join(BASE_DIR, "data", "cache.db")
+DEFAULT_CACHE_EXPIRY_HOURS = 12
+
+CACHE_EXPIRY_HOURS = DEFAULT_CACHE_EXPIRY_HOURS
+CACHE_DB = DEFAULT_CACHE_DB
+MODEL_DIR = DEFAULT_MODEL_DIR
+
+
+def _settings_path():
+    return os.path.join(BASE_DIR, "settings.json")
+
+
+def _ensure_directory(path):
+    try:
+        os.makedirs(path, exist_ok=True)
+        return True
+    except OSError:
+        return False
+
+
+def _normalize_cache_expiry(expiry_value):
+    try:
+        hours = int(expiry_value)
+        if hours <= 0:
+            raise ValueError
+    except (TypeError, ValueError):
+        hours = DEFAULT_CACHE_EXPIRY_HOURS
+    return hours
+
+
+def _validate_cache_db_path(path):
+    candidate = os.path.abspath(path) if path else DEFAULT_CACHE_DB
+    directory = os.path.dirname(candidate) or BASE_DIR
+    if _ensure_directory(directory):
+        return candidate
+    print(f"Invalid cache DB directory for '{candidate}', falling back to default.")
+    _ensure_directory(os.path.dirname(DEFAULT_CACHE_DB))
+    return DEFAULT_CACHE_DB
+
+
+def _validate_model_path(path):
+    if path:
+        candidate = os.path.abspath(path)
+        if os.path.isfile(candidate):
+            return candidate
+        print(f"Model path '{candidate}' is invalid. Falling back to default model.")
+
+    default_candidate = os.path.abspath(DEFAULT_MODEL_DIR)
+    if os.path.isfile(default_candidate):
+        return default_candidate
+    return default_candidate
+
+
+def _normalize_settings(settings):
+    normalized = {
+        "cache_expiry_hours": _normalize_cache_expiry(settings.get("cache_expiry_hours", DEFAULT_CACHE_EXPIRY_HOURS)),
+        "cache_db_path": _validate_cache_db_path(settings.get("cache_db_path", DEFAULT_CACHE_DB)),
+        "model_path": _validate_model_path(settings.get("model_path", DEFAULT_MODEL_DIR)),
+    }
+    return normalized
+
+
+def apply_settings(settings):
+    global CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR
+    normalized = _normalize_settings(settings)
+    CACHE_EXPIRY_HOURS = normalized["cache_expiry_hours"]
+    CACHE_DB = normalized["cache_db_path"]
+    MODEL_DIR = normalized["model_path"]
+    return normalized
+
+
+def load_settings():
+    settings_path = _settings_path()
+    if os.path.exists(settings_path):
+        try:
+            with open(settings_path, 'r') as f:
+                file_settings = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            print("Failed to load settings.json, using defaults.")
+            file_settings = {}
+    else:
+        file_settings = {}
+
+    return apply_settings(file_settings)
+
+
+load_settings()
+
+
+def get_active_settings():
+    return {
+        "cache_expiry_hours": CACHE_EXPIRY_HOURS,
+        "cache_db_path": CACHE_DB,
+        "model_path": MODEL_DIR,
+    }
 
 # --------------------------
 # CACHING LAYER
 # --------------------------
-CACHE_EXPIRY_HOURS = 12
 
 # Initialize DB
 def get_db():
     conn = sqlite3.connect(CACHE_DB, check_same_thread=False)
     return conn, conn.cursor()
 
-con, cur = get_db()
-cur.execute("CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value BLOB, timestamp REAL)")
-con.commit()
+def initialize_cache_db():
+    conn, cursor = get_db()
+    cursor.execute("CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value BLOB, timestamp REAL)")
+    conn.commit()
+    conn.close()
+
+
+initialize_cache_db()
+
+
+def persist_settings(settings):
+    normalized = apply_settings(settings)
+    with open(_settings_path(), 'w') as f:
+        json.dump(normalized, f, indent=4)
+    initialize_cache_db()
+    return normalized
 
 def _expired_ts(ts):
     return datetime.now().timestamp() - ts > CACHE_EXPIRY_HOURS * 3600
@@ -596,16 +702,7 @@ def open_settings_window():
     win.title("Settings")
     win.geometry("400x460")
 
-    settings_path = os.path.join(BASE_DIR, "settings.json")
-    if os.path.exists(settings_path):
-        with open(settings_path, 'r') as f:
-            settings = json.load(f)
-    else:
-        settings = {
-            "cache_expiry_hours": CACHE_EXPIRY_HOURS,
-            "cache_db_path": CACHE_DB,
-            "model_path": MODEL_DIR
-        }
+    settings = get_active_settings()
 
     tk.Label(win, text="Settings Panel", font=("Arial", 14, "bold")).pack(pady=10)
 
@@ -630,16 +727,14 @@ def open_settings_window():
 
     def save_settings():
         new_settings = {
-            "cache_expiry_hours": int(expiry_var.get()),
+            "cache_expiry_hours": expiry_var.get(),
             "cache_db_path": cache_var.get(),
             "model_path": model_var.get()
         }
-        with open(settings_path, 'w') as f:
-            json.dump(new_settings, f, indent=4)
-        global CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR
-        CACHE_EXPIRY_HOURS = new_settings["cache_expiry_hours"]
-        CACHE_DB = new_settings["cache_db_path"]
-        MODEL_DIR = new_settings["model_path"]
+        normalized = persist_settings(new_settings)
+        expiry_var.set(str(normalized["cache_expiry_hours"]))
+        cache_var.set(normalized["cache_db_path"])
+        model_var.set(normalized["model_path"])
         status_cb("Settings updated and saved.", level="good")
         win.destroy()
 
@@ -739,7 +834,12 @@ def on_closing():
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
+def load_model_file():
+    if not os.path.isfile(MODEL_DIR):
+        raise FileNotFoundError(f"Model file not found at {MODEL_DIR}")
+    return joblib.load(MODEL_DIR)
+
 # Load the model
-model = joblib.load(MODEL_DIR)
+model = load_model_file()
 
 root.mainloop()

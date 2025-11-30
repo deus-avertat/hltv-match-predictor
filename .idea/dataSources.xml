@@ -2,7 +2,7 @@
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
     <data-source source="LOCAL" name="cache" uuid="e2198e96-b6b6-4383-8ddd-d9b6a29ac68c">
-      <driver-ref>sqlite.xerial</driver-ref>
+      <driver-ref>e4c8a241-26c9-46a7-bc65-4ae2956ba14b</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:C:\Users\Tristan\PycharmProjects\cs2-match-predictor-main\cache.db</jdbc-url>
