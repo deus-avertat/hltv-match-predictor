@@ -20,8 +20,8 @@ class Dictionary:
         'mrg': 'Mirage',
         'inf': 'Inferno',
         'anc': 'Ancient',
-        'anb': 'Anubis',
-        'vtg': 'Vertigo',
+        # 'anb': 'Anubis',
+        # 'vtg': 'Vertigo',
         'ovp': 'Overpass'
     }
     map_team_dict = {
@@ -31,7 +31,7 @@ class Dictionary:
         'Nuke': 34,
         'Train': 35,
         'Overpass': 40,
-        'Vertigo': 46,
+        # 'Vertigo': 46,
         'Ancient': 47,
-        'Anubis': 48
+        # 'Anubis': 48
     }

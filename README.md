@@ -82,6 +82,7 @@ github/
 - 🔍 Scrapes HTLV and generates a .json file ready for training.
 - 🎓 Trains a machine learning model.
 - 🧠 Predicts which team will win based on match features.
+- ![img.png](img.png)
 
 ---
 

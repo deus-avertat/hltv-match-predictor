@@ -499,7 +499,7 @@ def show_spider_chart():
 # GUI
 # --------------------------
 root = tk.Tk()
-root.title("CS:GO Match Predictor")
+root.title("CS2 Match Predictor - HLTV")
 
 # Set UI Theme
 style = ttk.Style(root)
