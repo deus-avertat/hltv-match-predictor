@@ -41,6 +41,7 @@ github/
    ```
 
 2. **Scrape match data**:
+   - **NOTE:** You may need to supply your own cookies as sometimes Cloudflare will trigger bot activity, see `scraper/HELP.md` for instructions on getting cookies.
    ```bash
    python scraper/scraping.py
    ```
