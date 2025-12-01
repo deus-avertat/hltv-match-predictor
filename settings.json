@@ -1,5 +1,0 @@
-{
-    "cache_expiry_hours": 8,
-    "cache_db_path": "C:\\Users\\Tristan\\PycharmProjects\\cs2-match-predictor-main\\data\\cache.db",
-    "model_path": "C:\\Users\\Tristan\\PycharmProjects\\cs2-match-predictor-main\\model\\cs2_model.pkl"
-}
