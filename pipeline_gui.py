@@ -1,11 +1,7 @@
 import os
-import platform
-import subprocess
 import threading
 import sqlite3
 import pickle
-import winreg
-
 import joblib
 import numpy as np
 import pandas as pd
@@ -17,6 +13,11 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import filedialog, ttk
 import json
+
+from utils.helpers import Utils, Cache, Settings
+from utils.dictionary import Dictionary
+from utils.driver import HTMLUtils
+from utils.database import Database as DB
 
 # --------------------------
 # GLOBAL VARS
@@ -30,60 +31,19 @@ CACHE_EXPIRY_HOURS = DEFAULT_CACHE_EXPIRY_HOURS
 CACHE_DB = DEFAULT_CACHE_DB
 MODEL_DIR = DEFAULT_MODEL_DIR
 
-
-def _settings_path():
-    return os.path.join(BASE_DIR, "settings.json")
-
-
-def _ensure_directory(path):
-    try:
-        os.makedirs(path, exist_ok=True)
-        return True
-    except OSError:
-        return False
-
-
-def _normalize_cache_expiry(expiry_value):
-    try:
-        hours = int(expiry_value)
-        if hours <= 0:
-            raise ValueError
-    except (TypeError, ValueError):
-        hours = DEFAULT_CACHE_EXPIRY_HOURS
-    return hours
-
-
-def _validate_cache_db_path(path):
-    candidate = os.path.abspath(path) if path else DEFAULT_CACHE_DB
-    directory = os.path.dirname(candidate) or BASE_DIR
-    if _ensure_directory(directory):
-        return candidate
-    print(f"Invalid cache DB directory for '{candidate}', falling back to default.")
-    _ensure_directory(os.path.dirname(DEFAULT_CACHE_DB))
-    return DEFAULT_CACHE_DB
-
-
-def _validate_model_path(path):
-    if path:
-        candidate = os.path.abspath(path)
-        if os.path.isfile(candidate):
-            return candidate
-        print(f"Model path '{candidate}' is invalid. Falling back to default model.")
-
-    default_candidate = os.path.abspath(DEFAULT_MODEL_DIR)
-    if os.path.isfile(default_candidate):
-        return default_candidate
-    return default_candidate
-
-
+# --------------------------
+# SETTINGS
+# --------------------------
 def _normalize_settings(settings):
+    dev = settings.get("cache_expiry_hours", DEFAULT_CACHE_EXPIRY_HOURS)
+    dcdb = settings.get("cache_db_path", DEFAULT_CACHE_DB)
+    dmd = settings.get("model_path", DEFAULT_MODEL_DIR)
     normalized = {
-        "cache_expiry_hours": _normalize_cache_expiry(settings.get("cache_expiry_hours", DEFAULT_CACHE_EXPIRY_HOURS)),
-        "cache_db_path": _validate_cache_db_path(settings.get("cache_db_path", DEFAULT_CACHE_DB)),
-        "model_path": _validate_model_path(settings.get("model_path", DEFAULT_MODEL_DIR)),
+        "cache_expiry_hours": Cache.normalize_cache_expiry(dev, DEFAULT_CACHE_EXPIRY_HOURS),
+        "cache_db_path": Cache.validate_cache_db_path(dcdb, DEFAULT_CACHE_DB, BASE_DIR),
+        "model_path": Cache.validate_model_path(dmd, DEFAULT_MODEL_DIR),
     }
     return normalized
-
 
 def apply_settings(settings):
     global CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR
@@ -93,9 +53,15 @@ def apply_settings(settings):
     MODEL_DIR = normalized["model_path"]
     return normalized
 
+def persist_settings(settings):
+    normalized = apply_settings(settings)
+    with open(Settings.settings_path(BASE_DIR), 'w') as f:
+        json.dump(normalized, f, indent=4)
+    DB.initialize_cache_db(CACHE_DB)
+    return normalized
 
 def load_settings():
-    settings_path = _settings_path()
+    settings_path = Settings.settings_path(BASE_DIR)
     if os.path.exists(settings_path):
         try:
             with open(settings_path, 'r') as f:
@@ -111,106 +77,12 @@ def load_settings():
 
 load_settings()
 
-
-def get_active_settings():
-    return {
-        "cache_expiry_hours": CACHE_EXPIRY_HOURS,
-        "cache_db_path": CACHE_DB,
-        "model_path": MODEL_DIR,
-    }
-
-# --------------------------
-# CACHING LAYER
-# --------------------------
-
-# Initialize DB
-def get_db():
-    conn = sqlite3.connect(CACHE_DB, check_same_thread=False)
-    return conn, conn.cursor()
-
-def initialize_cache_db():
-    conn, cursor = get_db()
-    cursor.execute("CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value BLOB, timestamp REAL)")
-    conn.commit()
-    conn.close()
-
-
-initialize_cache_db()
-
-
-def persist_settings(settings):
-    normalized = apply_settings(settings)
-    with open(_settings_path(), 'w') as f:
-        json.dump(normalized, f, indent=4)
-    initialize_cache_db()
-    return normalized
-
-def _expired_ts(ts):
-    return datetime.now().timestamp() - ts > CACHE_EXPIRY_HOURS * 3600
-
-
-def cache_get(db_key):
-    conn, cursor = get_db()
-    cursor.execute("SELECT value, timestamp FROM cache WHERE key=?", (db_key,))
-    row = cursor.fetchone()
-    conn.close()
-
-    if not row:
-        return None
-
-    value, ts = row
-    if _expired_ts(ts):
-        cache_delete(db_key)
-        return None
-
-    return pickle.loads(value)
-
-
-def cache_set(db_key, value):
-    conn, cursor = get_db()
-    blob = pickle.dumps(value)
-    ts = datetime.now().timestamp()
-    cursor.execute("REPLACE INTO cache (key, value, timestamp) VALUES (?, ?, ?)", (db_key, blob, ts))
-    conn.commit()
-    conn.close()
-
-def cache_delete(db_key):
-    conn, cursor = get_db()
-    cursor.execute("DELETE FROM cache WHERE key=?", (db_key,))
-    conn.commit()
-    conn.close()
-
-def clear_cache():
-    conn, cursor = get_db()
-    cursor.execute("DELETE FROM cache")
-    conn.commit()
-    conn.close()
-    result_text.insert(tk.END, "Cache cleared successfully.\n")
-
-def view_cache_stats():
-    conn, cursor = get_db()
-    cursor.execute("SELECT COUNT(*), SUM(LENGTH(value)) FROM cache")
-    count, size = cursor.fetchone()
-    size = size if size else 0
-    stats_window = tk.Toplevel(root)
-    stats_window.title("Cache Statistics")
-    tk.Label(stats_window, text=f"Cached Entries: {count}").pack()
-    tk.Label(stats_window, text=f"Database Size: {size/1024:.2f} KB").pack()
 # --------------------------
 # DICTIONARY
 # --------------------------
-month_dict = {1: 'january', 2: 'february', 3: 'march', 4: 'april', 5: 'may', 6: 'june', 7: 'july', 8: 'august',
-              9: 'september', 10: 'october', 11: 'november', 12: 'december'}
-map_player_dict = {
-    'trn': 'Train', 'nuke': 'Nuke', 'd2': 'Dust2', 'mrg': 'Mirage',
-    'inf': 'Inferno', 'anc': 'Ancient',
-    'ovp': 'Overpass'  # Add Overpass
-}
-
-map_team_dict = {
-    'Dust2': 31, 'Mirage': 32, 'Inferno': 33, 'Nuke': 34,
-    'Train': 35, 'Overpass': 36, 'Ancient': 47
-}
+month_dict = Dictionary.month_dict
+map_player_dict = Dictionary.map_player_dict
+map_team_dict = Dictionary.map_team_dict
 reverse_map_team_dict = {v: k for k, v in map_team_dict.items()}
 
 # --------------------------
@@ -257,25 +129,19 @@ def fetch_page(url):
 # --------------------------
 def get_valve_points(url):
     db_key = f"valve::{url}"
-    cached = cache_get(db_key)
+    cached = DB.cache_get(db_key, CACHE_DB, CACHE_EXPIRY_HOURS)
     if cached is not None:
         return cached
 
     html = fetch_page(url)
-    item = html.find(class_='teamLineExpanded')
-    if item is None:
-        item = html.find_all(class_='points')[-1]
-        pts = int(item.text.split(' ')[0].split('(')[1]) - 1
-    else:
-        pts = int(item.find(class_='points').text.split(' ')[0].split('(')[1])
-
-    cache_set(db_key, pts)
+    pts = HTMLUtils.get_team_line_expanded(html)
+    DB.cache_set(db_key, pts, CACHE_DB)
     return pts
 
 
 def get_winrate(url):
     db_key = f"winrate::{url}"
-    cached = cache_get(db_key)
+    cached = DB.cache_get(db_key, CACHE_DB, CACHE_EXPIRY_HOURS)
     if cached is not None:
         return cached
 
@@ -284,13 +150,13 @@ def get_winrate(url):
     w, d, l = map(int, stats.split(" / "))
     winrate = 0 if (w + d + l) == 0 else round(w / (w + d + l) * 100, 1)
 
-    cache_set(db_key, winrate)
+    DB.cache_set(db_key, winrate, CACHE_DB)
     return winrate
 
 
 def get_map_winrate(url):
     db_key = f"mapwin::{url}"
-    cached = cache_get(db_key)
+    cached = DB.cache_get(db_key, CACHE_DB, CACHE_EXPIRY_HOURS)
     if cached is not None:
         return cached
 
@@ -299,14 +165,14 @@ def get_map_winrate(url):
     w, d, l = map(int, map_stats.split(" / "))
     winrate = 0 if (w + d + l) == 0 else round(w / (w + d + l) * 100, 1)
 
-    cache_set(db_key, winrate)
+    DB.cache_set(db_key, winrate, CACHE_DB)
     return winrate
 
 
 def get_player_stats(name, player_id, date):
     key_date = date.strftime('%Y-%m-%d')
     db_key = f"player::{player_id}::{key_date}"
-    cached = cache_get(db_key)
+    cached = DB.cache_get(db_key, CACHE_DB, CACHE_EXPIRY_HOURS)
     if cached is not None:
         return cached
 
@@ -326,13 +192,13 @@ def get_player_stats(name, player_id, date):
             "map": map_player_dict.get(map_name, map_name)
         })
 
-    cache_set(db_key, stats)
+    DB.cache_set(db_key, stats, CACHE_DB)
     return stats
 
 
 def get_head_to_head_stats(url):
     db_key = f"h2h::{url}"
-    cached = cache_get(db_key)
+    cached = DB.cache_get(db_key, CACHE_DB, CACHE_EXPIRY_HOURS)
     if cached is not None:
         return cached
 
@@ -341,14 +207,14 @@ def get_head_to_head_stats(url):
     stats = item.find_all(class_='bold')
     w1, ot, w2 = [int(s.text) for s in stats]
     result = [w1, w2]
-    cache_set(db_key, result)
+    DB.cache_set(db_key, result, CACHE_DB)
     return result
 
 
 def get_recent_matches(name, team_id, date):
     key_date = date.strftime('%Y-%m-%d')
     db_key = f"recent::{team_id}::{key_date}::{name}"
-    cached = cache_get(db_key)
+    cached = DB.cache_get(db_key, CACHE_DB, CACHE_EXPIRY_HOURS)
     if cached is not None:
         return cached
 
@@ -358,7 +224,7 @@ def get_recent_matches(name, team_id, date):
     lst = [m.find(class_=["match-lost", "match-won"]).text.strip() for m in matches]
     lst.reverse()
 
-    cache_set(db_key, lst)
+    DB.cache_set(db_key, lst, CACHE_DB)
     return lst
 
 
@@ -367,14 +233,14 @@ def get_recent_matches(name, team_id, date):
 # --------------------------
 def prepare_match_all_maps(url):
     db_key = f"match::{url}"
-    cached = cache_get(db_key)
+    cached = DB.cache_get(db_key, CACHE_DB, CACHE_EXPIRY_HOURS)
     if cached is not None:
-        if status_cb:
-            status_cb("Loaded match data from cache.", level="good")
+        if Utils.status_cb:
+            Utils.status_cb("Loaded match data from cache.", result_text, progress_var, level="good")
         return cached
 
-    if status_cb:
-        status_cb("Loading match page...", level="good")
+    if Utils.status_cb:
+        Utils.status_cb("Loading match page...", result_text, progress_var, level="good")
 
     html = fetch_page(url)
     unix = int(html.find(class_='date')['data-unix']) / 1000
@@ -389,13 +255,17 @@ def prepare_match_all_maps(url):
     team2_id = team2.find('a')['href'].split('/')[-2]
 
     # Fetch cached stats
-    if status_cb:
-        status_cb("Fetching team rankings and recent performance...", level="good")
+    if Utils.status_cb:
+        Utils.status_cb("Fetching team rankings and recent performance...", result_text, progress_var, level="good")
+
+    #value = 1
+    #if date.day - 1 == 0:
+    #    value = 1
 
     team1_valve_pts = get_valve_points(
-        f"https://www.hltv.org/valve-ranking/teams/{date.year}/{month_dict[date.month]}/{date.day - 1}?teamId={team1_id}")
+        f"https://www.hltv.org/valve-ranking/teams/{date.year}/{month_dict[date.month]}/{date.day}?teamId={team1_id}")
     team2_valve_pts = get_valve_points(
-        f"https://www.hltv.org/valve-ranking/teams/{date.year}/{month_dict[date.month]}/{date.day - 1}?teamId={team2_id}")
+        f"https://www.hltv.org/valve-ranking/teams/{date.year}/{month_dict[date.month]}/{date.day}?teamId={team2_id}")
     team1_winrate = get_winrate(
         f'https://www.hltv.org/stats/teams/{team1_id}/{team1_name}?startDate={(date - timedelta(days=90)).strftime("%Y-%m-%d")}&endDate={date.strftime("%Y-%m-%d")}')
     team2_winrate = get_winrate(
@@ -405,8 +275,8 @@ def prepare_match_all_maps(url):
     team2_recent_matches = get_recent_matches(team2_name, team2_id, date)
 
     # Players
-    if status_cb:
-        status_cb("Fetching player statistics...", level="good")
+    if Utils.status_cb:
+        Utils.status_cb("Fetching player statistics...", result_text, progress_var, level="good")
 
     team1_players = html.find_all(class_='lineup')[0].find(class_='players').find_all('tr')[1].find_all(
         class_='player-compare')
@@ -427,13 +297,13 @@ def prepare_match_all_maps(url):
         stats = get_player_stats(pname, pid, date)
         team2_players_stats.append({"name": pname, "stats": stats})
 
-    if status_cb:
-        status_cb("Fetching map stats and running predictions...", level="good")
+    if Utils.status_cb:
+        Utils.status_cb("Fetching map stats and running predictions...", result_text, progress_var,  level="good")
 
     predictions = []
     for map_name in map_team_dict.keys():
-        if status_cb:
-            status_cb(f"Processing map {map_name}...")
+        if Utils.status_cb:
+            Utils.status_cb(f"Processing map {map_name}...", result_text, progress_var)
         map_code = map_team_dict[map_name]
         team1_map_winrate = get_map_winrate(
             f'https://www.hltv.org/stats/teams/map/{map_code}/{team1_id}/{team1_name}?startDate={(date - timedelta(days=90)).strftime("%Y-%m-%d")}&endDate={date.strftime("%Y-%m-%d")}')
@@ -478,10 +348,10 @@ def prepare_match_all_maps(url):
     output = {"match_code": match_code, "date": date.strftime('%Y-%m-%d'), "teams": [team1_name, team2_name],
               "predictions": predictions}
 
-    if status_cb:
-        status_cb("Caching match data and finishing...", level="good")
+    if Utils.status_cb:
+        Utils.status_cb("Caching match data and finishing...", result_text, progress_var, level="good")
 
-    cache_set(db_key, output)
+    DB.cache_set(db_key, output, CACHE_DB)
     return output
 
 
@@ -511,8 +381,8 @@ def predict_all_maps():
         result_text.insert(tk.END, "Please enter a URL.\n")
         return
     result_text.delete(1.0, tk.END)  # Clear previous results
-    if status_cb:
-        status_cb("Fetching data...", level="good")
+    if Utils.status_cb:
+        Utils.status_cb("Fetching data...", result_text, progress_var, level="good")
     progressbar.grid()
     progressbar.start(10)
 
@@ -554,8 +424,8 @@ def predict_all_maps():
         progressbar.stop()
         progressbar.grid_remove()
         progress_var.set("Error")
-        if status_cb:
-            status_cb(f"Error: {str(e)}", level="error")
+        if Utils.status_cb:
+            Utils.status_cb(f"Error: {str(e)}", result_text, progress_var, level="error")
 
 
 def save_to_json():
@@ -567,15 +437,6 @@ def save_to_json():
         with open(file_path, 'w') as f:
             json.dump(current_results, f, indent=4)
         result_text.insert(tk.END, f"Results saved to {file_path}\n")
-
-def status_cb(msg, level='good'):
-    timestamp = datetime.now().strftime('%H:%M:%S')
-    line = f"[{timestamp}] {msg}\n"
-    tag = 'good' if level == 'good' else (
-        'info' if level == 'info' else ('warn' if level == 'warn' else 'error'))  # Horrid way to code this :>
-    result_text.insert(tk.END, line, tag)
-    result_text.see(tk.END)
-    progress_var.set(msg)
 
 # --------------------------
 # GRAPHS
@@ -635,55 +496,6 @@ def show_spider_chart():
     canvas.get_tk_widget().pack(fill='both', expand=True)
 
 # --------------------------
-# OTHER FUNCTIONS
-# --------------------------
-import subprocess
-import platform
-import winreg
-
-def detect_dark_mode():
-    system = platform.system()
-
-    # WINDOWS
-    if system == "Windows":
-        try:
-            registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
-            key = winreg.OpenKey(
-                registry,
-                r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-            )
-            value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
-            return value == 0  # 0 = Dark, 1 = Light
-        except:
-            return False  # fallback: assume light mode
-
-    # MACOS
-    elif system == "Darwin":
-        try:
-            output = subprocess.run(
-                ["defaults", "read", "-g", "AppleInterfaceStyle"],
-                capture_output=True, text=True
-            )
-            return "Dark" in output.stdout
-        except:
-            return False
-
-    # LINUX (GNOME)
-    elif system == "Linux":
-        try:
-            output = subprocess.run(
-                ["gsettings", "get", "org.gnome.desktop.interface", "color-scheme"],
-                capture_output=True, text=True
-            )
-            return "dark" in output.stdout.lower()
-        except:
-            return False
-
-    # FALLBACK
-    return False
-
-
-# --------------------------
 # GUI
 # --------------------------
 root = tk.Tk()
@@ -693,7 +505,7 @@ root.title("CS:GO Match Predictor")
 style = ttk.Style(root)
 root.tk.call('source', os.path.join(BASE_DIR, "ui", "forest-light.tcl"))
 root.tk.call('source', os.path.join(BASE_DIR, "ui", "forest-dark.tcl"))
-is_dark = detect_dark_mode()
+is_dark = Utils.detect_dark_mode()
 ttk.Style(root).theme_use("forest-dark" if is_dark else "forest-light")
 
 # Windows
@@ -702,7 +514,7 @@ def open_settings_window():
     win.title("Settings")
     win.geometry("400x460")
 
-    settings = get_active_settings()
+    settings = Settings.get_active_settings(CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR)
 
     tk.Label(win, text="Settings Panel", font=("Arial", 14, "bold")).pack(pady=10)
 
@@ -735,7 +547,7 @@ def open_settings_window():
         expiry_var.set(str(normalized["cache_expiry_hours"]))
         cache_var.set(normalized["cache_db_path"])
         model_var.set(normalized["model_path"])
-        status_cb("Settings updated and saved.", level="good")
+        Utils.status_cb("Settings updated and saved.", result_text, progress_var,  level="good")
         win.destroy()
 
     ttk.Button(win, text="Save Settings", style="Accent.TButton", command=save_settings).pack(pady=10)
@@ -793,11 +605,11 @@ save_button = ttk.Button(buttons_top, text="Save to JSON", style="Accent.TButton
 save_button.grid(row=0, column=0, padx=5, pady=5)
 
 # Clear Cache Button
-clear_cache_button = ttk.Button(buttons_top, text="Clear Cache", style="Accent.TButton", command=lambda: clear_cache())
+clear_cache_button = ttk.Button(buttons_top, text="Clear Cache", style="Accent.TButton", command=lambda: DB.clear_cache(CACHE_DB, result_text, progress_var))
 clear_cache_button.grid(row=0, column=1, padx=5, pady=5)
 
 # View Cache Stats Button
-view_cache_button = ttk.Button(buttons_top, text="View Cache Stats", style="Accent.TButton", command=lambda: view_cache_stats())
+view_cache_button = ttk.Button(buttons_top, text="View Cache Stats", style="Accent.TButton", command=lambda: DB.view_cache_stats(CACHE_DB, root))
 view_cache_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Graph Buttons
