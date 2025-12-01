@@ -27,6 +27,12 @@ github/
 ├── trainer/
 │   └── train.py                  # Script for training the model usingt the outputted scraper file.
 │
+├── utils/
+│   └── database.py               # Stores helper functions for the database
+│   └── dictionary.py             # Stores dictionary
+│   └── driver.py                 # Stores helper functions for the UC driver
+│   └── helpers.py                # Stores general helper functions
+│
 ├── requirements.txt              # Project dependencies
 └── README.md                     # Documentation (this file)
 ```
