@@ -1,7 +1,7 @@
 # 🧠 HLTV Match Predictor
 
 A machine learning pipeline to **predict the winner of a Counter-Strike 2 match** based on match data 🎯  
-This repository includes everything: scraping, feature engineering, model training, and prediction.
+This repository includes everything: scraping, feature engineering, model training, and a GUI for prediction.
 
 This scraper currently works for HLTV as of **December 2025**. If HLTV ever updates I will try and make sure this script continues to work.
 
