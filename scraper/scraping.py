@@ -101,8 +101,8 @@ def get_valve_points(url, name, driver):
         print(f"[ERROR] Couldn't fetch page: {url}")
         return 0
     pts = HTMLUtils.get_team_line_expanded(html)
-    logging.info(f"[INFO] Fetched valve points for: {name} ({len(pts)} points)")
-    print(f"[INFO] Fetched valve points for: {name} ({len(pts)} points)")
+    logging.info(f"[INFO] Fetched valve points for: {name} ({pts} points)")
+    print(f"[INFO] Fetched valve points for: {name} ({pts} points)")
     return pts
 
 def get_winrate(url, name, driver):
