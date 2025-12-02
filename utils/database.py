@@ -35,7 +35,7 @@ class Database:
 
         value, ts = row
         if Database._expired_ts(ts, ceh):
-            Database.cache_delete(db_key)
+            Database.cache_delete(db_key, db)
             return None
 
         return pickle.loads(value)

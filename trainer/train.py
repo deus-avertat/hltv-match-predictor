@@ -56,5 +56,5 @@ y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print(f'[INFO] Accuracy: {accuracy:.2f}')
 
-joblib.dump(model, '../model/cs2_model2.pkl')
-print("[INFO] Model saved as cs2_model2.pkl")
+joblib.dump(model, '../model/cs2_model3.pkl')
+print("[INFO] Model saved as cs2_model3.pkl")

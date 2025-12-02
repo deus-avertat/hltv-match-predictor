@@ -23,7 +23,7 @@ from utils.database import Database as DB
 # GLOBAL VARS
 # --------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_MODEL_DIR = os.path.join(BASE_DIR, "model", "cs2_model.pkl")
+DEFAULT_MODEL_DIR = os.path.join(BASE_DIR, "model", "cs2_model3.pkl")
 DEFAULT_CACHE_DB = os.path.join(BASE_DIR, "data", "cache.db")
 DEFAULT_CACHE_EXPIRY_HOURS = 12
 
@@ -76,6 +76,44 @@ def load_settings():
 
 
 load_settings()
+
+def _format_model_metadata(path):
+    metadata = {"path": os.path.abspath(path) if path else ""}
+
+    if not path or not os.path.isfile(path):
+        metadata["error"] = "Model file not found."
+        return metadata
+
+    try:
+        stats = os.stat(path)
+        metadata.update({
+            "size_mb": round(stats.st_size / (1024 * 1024), 2),
+            "modified": datetime.fromtimestamp(stats.st_mtime).strftime("%Y-%m-%d %H:%M:%S"),
+        })
+
+        model_obj = joblib.load(path)
+        metadata.update({
+            "estimator": type(model_obj).__name__,
+            "estimator_module": getattr(model_obj, "__module__", ""),
+        })
+    except Exception as e:
+        metadata["error"] = f"Failed to read model metadata: {e}"
+
+    return metadata
+
+
+def _model_metadata_text(metadata):
+    if "error" in metadata:
+        return f"Status: {metadata['error']}\nPath: {metadata.get('path', 'N/A')}"
+
+    return "\n".join([
+        f"Path: {metadata['path']}",
+        f"Estimator: {metadata.get('estimator', 'Unknown')}",
+        f"Module: {metadata.get('estimator_module', 'Unknown')}",
+        f"Size: {metadata.get('size_mb', '0')} MB",
+        f"Last Modified: {metadata.get('modified', 'Unknown')}",
+    ])
+
 
 # --------------------------
 # DICTIONARY
@@ -178,7 +216,13 @@ def get_player_stats(name, player_id, date):
 
     url = f"https://www.hltv.org/stats/players/matches/{player_id}/{name}?startDate={(date - timedelta(days=90)).strftime('%Y-%m-%d')}&endDate={key_date}"
     html = fetch_page(url)
-    matches = html.find(class_='stats-table').find_all("tr", class_=["group-1", "group-2"], limit=10)
+
+    table = html.find(class_='stats-table')
+    if table is None:
+        print(f"[ERROR] No player stats-table found for {name} ({player_id})")
+        DB.cache_set(db_key, [], CACHE_DB)
+        return []
+    matches = table.find_all("tr", class_=["group-1", "group-2"], limit=10)
 
     stats = []
     for match in matches:
@@ -512,7 +556,7 @@ ttk.Style(root).theme_use("forest-dark" if is_dark else "forest-light")
 def open_settings_window():
     win = tk.Toplevel(root)
     win.title("Settings")
-    win.geometry("400x460")
+    win.geometry("430x460")
 
     settings = Settings.get_active_settings(CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR)
 
@@ -537,6 +581,19 @@ def open_settings_window():
     model_entry.pack()
     ttk.Button(win, text="Browse", style="Accent.TButton", command=lambda: model_var.set(filedialog.askopenfilename())).pack(pady=2)
 
+    # Model Metadata
+    model_info_frame = ttk.LabelFrame(win, text="Model Info")
+    model_info_frame.pack(fill="x", padx=10, pady=10)
+    model_info_var = tk.StringVar()
+    model_info_label = tk.Label(model_info_frame, textvariable=model_info_var, justify="left", anchor="w")
+    model_info_label.pack(fill="x", padx=10, pady=5)
+
+    def refresh_model_info():
+        metadata = _format_model_metadata(model_var.get())
+        model_info_var.set(_model_metadata_text(metadata))
+
+    refresh_model_info()
+
     def save_settings():
         new_settings = {
             "cache_expiry_hours": expiry_var.get(),
@@ -547,6 +604,7 @@ def open_settings_window():
         expiry_var.set(str(normalized["cache_expiry_hours"]))
         cache_var.set(normalized["cache_db_path"])
         model_var.set(normalized["model_path"])
+        refresh_model_info()
         Utils.status_cb("Settings updated and saved.", result_text, progress_var,  level="good")
         win.destroy()
 
