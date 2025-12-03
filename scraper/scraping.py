@@ -389,7 +389,7 @@ def start_scraper(team_limit, match_limit):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scrape HLTV Stats")
-    parser.add_argument("--teams-limit", type=int, default=10, help="Number of teams to scrape (default: 25)")
+    parser.add_argument("--teams-limit", type=int, default=100, help="Number of teams to scrape (default: 25)")
     parser.add_argument("--match-limit", type=int, default=25, help="Number of matches to scrape per team (default: 10)")
 
     args = parser.parse_args()
