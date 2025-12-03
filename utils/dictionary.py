@@ -35,3 +35,27 @@ class Dictionary:
         'Ancient': 47,
         # 'Anubis': 48
     }
+    adblock_list = [
+        "*://*.googlesyndication.com/*",
+        "*://*.googleadservices.com/*",
+        "*://*.doubleclick.net/*",
+        "*://*.google-analytics.com/*",
+        "*://*.analytics.google.com/*",
+        "*://*.outbrain.com/*",
+        "*://*.amplify.outbrain.com/*",
+        "*://*.marfeel.com/*",
+        "*://*.mrf.io/*",
+        "*://*.liftdsp.com/*",
+        "*://*.ads-twitter.com/*",
+        "*://*.yahoo.com/*",
+        "*://*.yimg.com/*",
+        "*://*.cloudflareinsights.com/*",
+        "*://*.stripe.com/*",  # optional
+        "*://*.adservice.google.com/*",
+        "*://*.taboola.com/*",
+        "*://*.scorecardresearch.com/*",
+        "*://cadmus.script.ac/*",
+        "*://*.script.ac/*",
+        "*://*.script.ac/d23sa75evsxrsv/*",
+        "*://*.allstar.gg/*",
+    ]

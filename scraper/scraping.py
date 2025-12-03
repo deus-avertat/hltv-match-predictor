@@ -21,7 +21,7 @@ reverse_map_team_dict = {v: k for k, v in map_team_dict.items()}
 
 # Date range for filtering
 START_DATE = datetime(2025, 11, 1)
-END_DATE = datetime(2025, 12, 1)
+END_DATE = datetime(2025, 12, 3)
 
 request_count = 0
 
@@ -374,6 +374,8 @@ def start_scraper(team_limit, match_limit):
     print(f"[INFO] Scraping {args.teams_limit} Teams at {args.match_limit} matches per team")
 
     driver = Driver.get_driver()
+    driver.execute_cdp_cmd("Network.enable", {})
+    driver.execute_cdp_cmd("Network.setBlockedURLs", {"urls": Dictionary.adblock_list})
     try:
         teams_match_pages = create_dataset(team_limit, driver)
         for team_match_page in teams_match_pages:
@@ -387,8 +389,8 @@ def start_scraper(team_limit, match_limit):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scrape HLTV Stats")
-    parser.add_argument("--teams-limit", type=int, default=100, help="Number of teams to scrape (default: 25)")
-    parser.add_argument("--match-limit", type=int, default=15, help="Number of matches to scrape per team (default: 10)")
+    parser.add_argument("--teams-limit", type=int, default=10, help="Number of teams to scrape (default: 25)")
+    parser.add_argument("--match-limit", type=int, default=25, help="Number of matches to scrape per team (default: 10)")
 
     args = parser.parse_args()
     start_scraper(args.teams_limit, args.match_limit)

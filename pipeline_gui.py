@@ -16,14 +16,14 @@ import json
 
 from utils.helpers import Utils, Cache, Settings
 from utils.dictionary import Dictionary
-from utils.driver import HTMLUtils
+from utils.driver import HTMLUtils, Driver
 from utils.database import Database as DB
 
 # --------------------------
 # GLOBAL VARS
 # --------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_MODEL_DIR = os.path.join(BASE_DIR, "model", "cs2_model3.pkl")
+DEFAULT_MODEL_DIR = os.path.join(BASE_DIR, "model", "cs2_model.pkl")
 DEFAULT_CACHE_DB = os.path.join(BASE_DIR, "data", "cache.db")
 DEFAULT_CACHE_EXPIRY_HOURS = 12
 
@@ -126,35 +126,9 @@ reverse_map_team_dict = {v: k for k, v in map_team_dict.items()}
 # --------------------------
 # CHROME DRIVER
 # --------------------------
-ADBLOCK_URLS = [
-    "*://*.googlesyndication.com/*",
-    "*://*.googleadservices.com/*",
-    "*://*.doubleclick.net/*",
-    "*://*.google-analytics.com/*",
-    "*://*.analytics.google.com/*",
-    "*://*.outbrain.com/*",
-    "*://*.amplify.outbrain.com/*",
-    "*://*.marfeel.com/*",
-    "*://*.mrf.io/*",
-    "*://*.liftdsp.com/*",
-    "*://*.ads-twitter.com/*",
-    "*://*.yahoo.com/*",
-    "*://*.yimg.com/*",
-    "*://*.cloudflareinsights.com/*",
-    "*://*.stripe.com/*",  # optional
-    "*://*.adservice.google.com/*",
-    "*://*.taboola.com/*",
-    "*://*.scorecardresearch.com/*",
-    "*://cadmus.script.ac/*",
-    "*://*.script.ac/*",
-    "*://*.script.ac/d23sa75evsxrsv/*",
-    "*://*.allstar.gg/*",
-]
-
-driver = uc.Chrome()
+driver = Driver.get_driver()
 driver.execute_cdp_cmd("Network.enable", {})
-driver.execute_cdp_cmd("Network.setBlockedURLs", {"urls": ADBLOCK_URLS})
-
+driver.execute_cdp_cmd("Network.setBlockedURLs", {"urls": Dictionary.adblock_list})
 
 def fetch_page(url):
     driver.get(url)
@@ -307,9 +281,9 @@ def prepare_match_all_maps(url):
     #    value = 1
 
     team1_valve_pts = get_valve_points(
-        f"https://www.hltv.org/valve-ranking/teams/{date.year}/{month_dict[date.month]}/{date.day}?teamId={team1_id}")
+        f"https://www.hltv.org/valve-ranking/teams/{date.year}/{month_dict[date.month]}/{date.day - 1}?teamId={team1_id}")
     team2_valve_pts = get_valve_points(
-        f"https://www.hltv.org/valve-ranking/teams/{date.year}/{month_dict[date.month]}/{date.day}?teamId={team2_id}")
+        f"https://www.hltv.org/valve-ranking/teams/{date.year}/{month_dict[date.month]}/{date.day - 1}?teamId={team2_id}")
     team1_winrate = get_winrate(
         f'https://www.hltv.org/stats/teams/{team1_id}/{team1_name}?startDate={(date - timedelta(days=90)).strftime("%Y-%m-%d")}&endDate={date.strftime("%Y-%m-%d")}')
     team2_winrate = get_winrate(
