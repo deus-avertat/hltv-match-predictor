@@ -20,8 +20,8 @@ map_team_dict = Dictionary.map_team_dict
 reverse_map_team_dict = {v: k for k, v in map_team_dict.items()}
 
 # Date range for filtering
-START_DATE = datetime(2025, 11, 1)
-END_DATE = datetime(2025, 12, 3)
+START_DATE = datetime(2025, 10, 1)
+END_DATE = datetime(2025, 12, 5)
 
 request_count = 0
 
@@ -222,7 +222,13 @@ def get_recent_matches(name, team_id, driver):
         logging.error(f"[ERROR] Couldn't fetch page: {url}")
         print(f"[ERROR] Couldn't fetch page: {url}")
         return []
-    matches = html.find(class_='stats-table').find_all("tr", class_=["group-1", "group-2"], limit=10)
+    table = html.find(class_='stats-table')
+    if table is None:
+        logging.error(f"[ERROR] No stats-table found for recent matches: {name} ({team_id})")
+        print(f"[ERROR] No stats-table found for recent matches: {name} ({team_id})")
+        return []
+
+    matches = table.find_all("tr", class_=["group-1", "group-2"], limit=10)
     recent_matches_list = []
     for match in matches:
         res = match.find(class_=["match-lost", "match-won"]).text.strip()
@@ -354,6 +360,11 @@ def create_dataset(count_teams, driver):
         print(f"[ERROR] Couldn't fetch page: {url}")
         return []
     item = html.find(class_='ranking')
+    if item is None:
+        logging.error(f"[ERROR] No ranking table found at: {url}")
+        print(f"[ERROR] No ranking table found at: {url}")
+        return []
+
     team_links = item.find_all(class_='moreLink', limit=count_teams)
     teams_match_pages = []
     for team_link in team_links: #[28:40]:
