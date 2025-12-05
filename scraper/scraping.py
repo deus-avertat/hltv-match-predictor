@@ -231,7 +231,8 @@ def get_recent_matches(name, team_id, driver):
     matches = table.find_all("tr", class_=["group-1", "group-2"], limit=10)
     recent_matches_list = []
     for match in matches:
-        res = match.find(class_=["match-lost", "match-won"]).text.strip()
+        res_el = match.find(class_=["match-lost", "match-won"])
+        res = res_el.text.strip() if res_el else "0"
         recent_matches_list.append(res)
     recent_matches_list.reverse()
     logging.info(f"[INFO] Fetched recent matches for: {name} ({team_id})")

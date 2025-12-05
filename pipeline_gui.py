@@ -1,4 +1,6 @@
 import os
+import subprocess
+import sys
 import threading
 import sqlite3
 import pickle
@@ -11,7 +13,7 @@ from datetime import datetime, timedelta
 import tkinter as tk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from tkinter import filedialog, ttk
+from tkinter import filedialog, messagebox, ttk
 import json
 
 from utils.helpers import Utils, Cache, Settings
@@ -592,6 +594,18 @@ def close_main_window():
         pass
     root.destroy()
 
+def open_stats_window():
+    stats_path = os.path.join(BASE_DIR, "ui", "stats_gui.py")
+    if not os.path.isfile(stats_path):
+        messagebox.showerror("Error", f"Stats file not found at {stats_path}")
+        return
+
+    try:
+        Utils.status_cb("Opening HLTV Data Statistics", result_text, progress_var, level="good")
+        subprocess.Popen([sys.executable, stats_path])
+    except Exception as e:
+        messagebox.showerror("Error", f"Error opening stats GUI: {e}")
+
 # Menu Bar
 menubar = tk.Menu(root)
 menubar.config(fg="white")
@@ -601,6 +615,7 @@ root.config(menu=menubar)
 file_menu = tk.Menu(menubar, tearoff=False)
 menubar.add_cascade(label="File", menu=file_menu)
 file_menu.add_command(label="Settings", command=open_settings_window)
+file_menu.add_command(label="Data Statistics", command=open_stats_window)
 file_menu.add_command(label="Exit", command=close_main_window)
 
 # Clear previous embedded graph
