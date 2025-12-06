@@ -749,7 +749,7 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
     result_text = tk.Text(root, height=20, width=100, font=('Courier', 10))
     result_text.tag_config('good', background='green')
     result_text.tag_config('info', background='white')
-    result_text.tag_config('warn', background='yellow')
+    result_text.tag_config('warn', background='yellow3')
     result_text.tag_config('error', background='red3')
     result_text.pack()
 

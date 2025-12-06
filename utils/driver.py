@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 import undetected_chromedriver as uc
 
@@ -13,8 +14,7 @@ class Driver:
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-blink-features=AutomationControlled")
-        options.add_argument(
-            "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36")
         return uc.Chrome(options=options)
 
     @staticmethod
@@ -39,12 +39,34 @@ class Driver:
         print("[INFO] Cookies injected and page refreshed")
 
 class HTMLUtils:
+    _last_team_line_points = None
+
     @staticmethod
     def get_team_line_expanded(html):
         item = html.find(class_='teamLineExpanded')
+        fallback_value = HTMLUtils._last_team_line_points if HTMLUtils._last_team_line_points is not None else 0
         if item is None:
-            item = html.find_all(class_='points')[-1]
-            pts = int(item.text.split(' ')[0].split('(')[1]) - 1
+            points_nodes = html.find_all(class_='points')
+            if not points_nodes:
+                logging.warning("[WARN] No 'points' nodes found; using cached/default value.")
+                return fallback_value
+
+            try:
+                pts = int(points_nodes[-1].text.split(' ')[0].split('(')[1]) - 1
+            except (ValueError, IndexError):
+                logging.warning("[WARN] Unexpected 'points' format; using cached/default value.")
+                return fallback_value
         else:
-            pts = int(item.find(class_='points').text.split(' ')[0].split('(')[1])
+            points_node = item.find(class_='points')
+            if points_node is None:
+                logging.warning("[WARN] 'points' node missing in teamLineExpanded; using cached/default value.")
+                return fallback_value
+
+            try:
+                pts = int(points_node.text.split(' ')[0].split('(')[1])
+            except (ValueError, IndexError):
+                logging.warning("[WARN] Unexpected 'points' format; using cached/default value.")
+                return fallback_value
+
+        HTMLUtils._last_team_line_points = pts
         return pts
