@@ -1,26 +1,24 @@
 import atexit
+import json
 import os
 import subprocess
 import sys
 import threading
-import sqlite3
-import pickle
+import tkinter as tk
+from datetime import datetime, timedelta
+from tkinter import filedialog, messagebox, ttk
+
 import joblib
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
-import undetected_chromedriver as uc
-from datetime import datetime, timedelta
-import tkinter as tk
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from tkinter import filedialog, messagebox, ttk
-import json
 
-from utils.helpers import Utils, Cache, Settings
+from utils.database import Database as DB
 from utils.dictionary import Dictionary
 from utils.driver import HTMLUtils, Driver
-from utils.database import Database as DB
+from utils.helpers import Utils, Cache, Settings
 
 # --------------------------
 # GLOBAL VARS
@@ -87,7 +85,9 @@ def load_settings():
     else:
         file_settings = {}
 
-    return apply_settings(file_settings)
+    applied = apply_settings(file_settings)
+    DB.initialize_cache_db(CACHE_DB)
+    return applied
 
 
 load_settings()
@@ -554,192 +554,200 @@ def show_spider_chart():
 # --------------------------
 # GUI
 # --------------------------
-root = tk.Tk()
-root.title("CS2 Match Predictor - HLTV")
+if os.environ.get("HLTV_SKIP_GUI") != "1":
+    root = tk.Tk()
+    root.title("CS2 Match Predictor - HLTV")
 
-# Set UI Theme
-style = ttk.Style(root)
-root.tk.call('source', os.path.join(BASE_DIR, "ui", "forest-light.tcl"))
-root.tk.call('source', os.path.join(BASE_DIR, "ui", "forest-dark.tcl"))
-is_dark = Utils.detect_dark_mode()
-ttk.Style(root).theme_use("forest-dark" if is_dark else "forest-light")
+    # Set UI Theme
+    style = ttk.Style(root)
+    root.tk.call('source', os.path.join(BASE_DIR, "ui", "forest-light.tcl"))
+    root.tk.call('source', os.path.join(BASE_DIR, "ui", "forest-dark.tcl"))
+    is_dark = Utils.detect_dark_mode()
+    ttk.Style(root).theme_use("forest-dark" if is_dark else "forest-light")
 
-# Windows
-def open_settings_window():
-    win = tk.Toplevel(root)
-    win.title("Settings")
-    win.geometry("430x520")
+    # Windows
+    def open_settings_window():
+        win = tk.Toplevel(root)
+        win.title("Settings")
+        win.geometry("430x520")
 
-    settings = Settings.get_active_settings(CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR, HEADLESS_MODE)
+        settings = Settings.get_active_settings(CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR, HEADLESS_MODE)
 
-    tk.Label(win, text="Settings Panel", font=("Arial", 14, "bold")).pack(pady=10)
+        tk.Label(win, text="Settings Panel", font=("Arial", 14, "bold")).pack(pady=10)
 
-    # Cache Expiry
-    tk.Label(win, text="Cache Expiry (hours):").pack()
-    expiry_var = tk.StringVar(value=str(settings.get("cache_expiry_hours", CACHE_EXPIRY_HOURS)))
-    tk.Entry(win, textvariable=expiry_var).pack()
+        # Cache Expiry
+        tk.Label(win, text="Cache Expiry (hours):").pack()
+        expiry_var = tk.StringVar(value=str(settings.get("cache_expiry_hours", CACHE_EXPIRY_HOURS)))
+        tk.Entry(win, textvariable=expiry_var).pack()
 
-    # Cache Directory
-    tk.Label(win, text="Cache DB Path:").pack()
-    cache_var = tk.StringVar(value=settings.get("cache_db_path", CACHE_DB))
-    cache_entry = tk.Entry(win, textvariable=cache_var, width=40)
-    cache_entry.pack()
-    ttk.Button(win, text="Browse", style="Accent.TButton", command=lambda: cache_var.set(filedialog.askopenfilename())).pack(pady=2)
+        # Cache Directory
+        tk.Label(win, text="Cache DB Path:").pack()
+        cache_var = tk.StringVar(value=settings.get("cache_db_path", CACHE_DB))
+        cache_entry = tk.Entry(win, textvariable=cache_var, width=40)
+        cache_entry.pack()
+        ttk.Button(win, text="Browse", style="Accent.TButton", command=lambda: cache_var.set(filedialog.askopenfilename())).pack(pady=2)
 
-    # Model Directory
-    tk.Label(win, text="Model File (.pkl):").pack()
-    model_var = tk.StringVar(value=settings.get("model_path", MODEL_DIR))
-    model_entry = tk.Entry(win, textvariable=model_var, width=40)
-    model_entry.pack()
-    ttk.Button(win, text="Browse", style="Accent.TButton", command=lambda: model_var.set(filedialog.askopenfilename())).pack(pady=2)
+        # Model Directory
+        tk.Label(win, text="Model File (.pkl):").pack()
+        model_var = tk.StringVar(value=settings.get("model_path", MODEL_DIR))
+        model_entry = tk.Entry(win, textvariable=model_var, width=40)
+        model_entry.pack()
+        ttk.Button(win, text="Browse", style="Accent.TButton", command=lambda: model_var.set(filedialog.askopenfilename())).pack(pady=2)
 
-    # Headless Mode
-    headless_var = tk.BooleanVar(value=settings.get("headless_mode", HEADLESS_MODE))
-    ttk.Checkbutton(win, text="Headless Mode", variable=headless_var).pack(pady=5)
+        # Headless Mode
+        headless_var = tk.BooleanVar(value=settings.get("headless_mode", HEADLESS_MODE))
+        ttk.Checkbutton(win, text="Headless Mode", variable=headless_var).pack(pady=5)
 
-    # Model Metadata
-    model_info_frame = ttk.LabelFrame(win, text="Model Info")
-    model_info_frame.pack(fill="x", padx=10, pady=10)
-    model_info_var = tk.StringVar()
-    model_info_label = tk.Label(model_info_frame, textvariable=model_info_var, justify="left", anchor="w")
-    model_info_label.pack(fill="x", padx=10, pady=5)
+        # Model Metadata
+        model_info_frame = ttk.LabelFrame(win, text="Model Info")
+        model_info_frame.pack(fill="x", padx=10, pady=10)
+        model_info_var = tk.StringVar()
+        model_info_label = tk.Label(model_info_frame, textvariable=model_info_var, justify="left", anchor="w")
+        model_info_label.pack(fill="x", padx=10, pady=5)
 
-    def refresh_model_info():
-        metadata = _format_model_metadata(model_var.get())
-        model_info_var.set(_model_metadata_text(metadata))
+        def refresh_model_info():
+            metadata = _format_model_metadata(model_var.get())
+            model_info_var.set(_model_metadata_text(metadata))
 
-    refresh_model_info()
-
-    def save_settings():
-        new_settings = {
-            "cache_expiry_hours": expiry_var.get(),
-            "cache_db_path": cache_var.get(),
-            "model_path": model_var.get(),
-            "headless": headless_var.get(),
-        }
-        normalized = persist_settings(new_settings)
-        expiry_var.set(str(normalized["cache_expiry_hours"]))
-        cache_var.set(normalized["cache_db_path"])
-        model_var.set(normalized["model_path"])
-        headless_var.set(normalized["headless_mode"])
         refresh_model_info()
+
+        def save_settings():
+            new_settings = {
+                "cache_expiry_hours": expiry_var.get(),
+                "cache_db_path": cache_var.get(),
+                "model_path": model_var.get(),
+                "headless": headless_var.get(),
+            }
+            normalized = persist_settings(new_settings)
+            expiry_var.set(str(normalized["cache_expiry_hours"]))
+            cache_var.set(normalized["cache_db_path"])
+            model_var.set(normalized["model_path"])
+            headless_var.set(normalized["headless_mode"])
+            refresh_model_info()
+            stop_driver()
+            Utils.status_cb("Settings updated and saved.", result_text, progress_var, level="good")
+            win.destroy()
+
+        ttk.Button(win, text="Save Settings", style="Accent.TButton", command=save_settings).pack(pady=10)
+        ttk.Button(win, text="Close", style="Accent.TButton", command=win.destroy).pack(pady=5)
+
+
+    def close_main_window():
         stop_driver()
-        Utils.status_cb("Settings updated and saved.", result_text, progress_var,  level="good")
-        win.destroy()
+        root.destroy()
 
-    ttk.Button(win, text="Save Settings", style="Accent.TButton", command=save_settings).pack(pady=10)
-    ttk.Button(win, text="Close", style="Accent.TButton", command=win.destroy).pack(pady=5)
+    def open_stats_window():
+        stats_path = os.path.join(BASE_DIR, "ui", "stats_gui.py")
+        if not os.path.isfile(stats_path):
+            messagebox.showerror("Error", f"Stats file not found at {stats_path}")
+            return
 
-def close_main_window():
-    stop_driver()
-    root.destroy()
+        try:
+            Utils.status_cb("Opening HLTV Data Statistics", result_text, progress_var, level="good")
+            subprocess.Popen([sys.executable, stats_path])
+        except Exception as e:
+            messagebox.showerror("Error", f"Error opening stats GUI: {e}")
 
-def open_stats_window():
-    stats_path = os.path.join(BASE_DIR, "ui", "stats_gui.py")
-    if not os.path.isfile(stats_path):
-        messagebox.showerror("Error", f"Stats file not found at {stats_path}")
-        return
+    # Menu Bar
+    menubar = tk.Menu(root)
+    menubar.config(fg="white")
+    root.config(menu=menubar)
 
-    try:
-        Utils.status_cb("Opening HLTV Data Statistics", result_text, progress_var, level="good")
-        subprocess.Popen([sys.executable, stats_path])
-    except Exception as e:
-        messagebox.showerror("Error", f"Error opening stats GUI: {e}")
+    # File Menu
+    file_menu = tk.Menu(menubar, tearoff=False)
+    menubar.add_cascade(label="File", menu=file_menu)
+    file_menu.add_command(label="Settings", command=open_settings_window)
+    file_menu.add_command(label="Exit", command=close_main_window)
 
-# Menu Bar
-menubar = tk.Menu(root)
-menubar.config(fg="white")
-root.config(menu=menubar)
+    # Data Menu
+    data_menu = tk.Menu(menubar, tearoff=False)
+    menubar.add_cascade(label="Data", menu=data_menu)
+    data_menu.add_command(label="HLTV Stats", command=open_stats_window)
 
-# File Menu
-file_menu = tk.Menu(menubar, tearoff=False)
-menubar.add_cascade(label="File", menu=file_menu)
-file_menu.add_command(label="Settings", command=open_settings_window)
-file_menu.add_command(label="Exit", command=close_main_window)
+    # Clear previous embedded graph
+    def clear_graph():
+        for widget in graph_frame.winfo_children():
+            widget.destroy()
 
-# Data Menu
-data_menu = tk.Menu(menubar, tearoff=False)
-menubar.add_cascade(label="Data", menu=data_menu)
-data_menu.add_command(label="HLTV Stats", command=open_stats_window)
+    url_label = tk.Label(root, text="Match URL:")
+    url_label.pack()
 
-# Clear previous embedded graph
-def clear_graph():
-    for widget in graph_frame.winfo_children():
-        widget.destroy()
+    url_entry = tk.Entry(root, width=50)
+    url_entry.pack()
 
-url_label = tk.Label(root, text="Match URL:")
-url_label.pack()
+    predict_button = ttk.Button(root, text="Predict All Maps", style="Accent.TButton",
+                                command=lambda: (clear_graph(), threading.Thread(target=predict_all_maps).start()))
+    predict_button.pack(pady=5)
 
-url_entry = tk.Entry(root, width=50)
-url_entry.pack()
+    # Set monospaced font and increased width
+    result_text = tk.Text(root, height=20, width=100, font=('Courier', 10))
+    result_text.tag_config('good', background='green')
+    result_text.tag_config('info', background='white')
+    result_text.tag_config('warn', background='yellow')
+    result_text.tag_config('error', background='red3')
+    result_text.pack()
 
-predict_button = ttk.Button(root, text="Predict All Maps", style="Accent.TButton", command=lambda: (clear_graph(), threading.Thread(target=predict_all_maps).start()))
-predict_button.pack(pady=5)
+    # Button Frame
+    buttons_top = tk.Frame(root)
+    buttons_top.pack()
 
-# Set monospaced font and increased width
-result_text = tk.Text(root, height=20, width=100, font=('Courier', 10))
-result_text.tag_config('good', background='green')
-result_text.tag_config('info', background='white')
-result_text.tag_config('warn', background='yellow')
-result_text.tag_config('error', background='red3')
-result_text.pack()
+    buttons_btm = tk.Frame(root)
+    buttons_btm.pack()
 
-# Button Frame
-buttons_top = tk.Frame(root)
-buttons_top.pack()
+    # Save Button
+    save_button = ttk.Button(buttons_top, text="Save to JSON", style="Accent.TButton", command=save_to_json,
+                             state=tk.DISABLED)
+    save_button.grid(row=0, column=0, padx=5, pady=5)
 
-buttons_btm = tk.Frame(root)
-buttons_btm.pack()
+    # Clear Cache Button
+    clear_cache_button = ttk.Button(buttons_top, text="Clear Cache", style="Accent.TButton",
+                                    command=lambda: DB.clear_cache(CACHE_DB, result_text, progress_var))
+    clear_cache_button.grid(row=0, column=1, padx=5, pady=5)
 
-# Save Button
-save_button = ttk.Button(buttons_top, text="Save to JSON", style="Accent.TButton", command=save_to_json, state=tk.DISABLED)
-save_button.grid(row=0, column=0, padx=5, pady=5)
+    # View Cache Stats Button
+    view_cache_button = ttk.Button(buttons_top, text="View Cache Stats", style="Accent.TButton",
+                                       command=lambda: DB.view_cache_stats(CACHE_DB, root))
+    view_cache_button.grid(row=0, column=2, padx=5, pady=5)
 
-# Clear Cache Button
-clear_cache_button = ttk.Button(buttons_top, text="Clear Cache", style="Accent.TButton", command=lambda: DB.clear_cache(CACHE_DB, result_text, progress_var))
-clear_cache_button.grid(row=0, column=1, padx=5, pady=5)
+    # Graph Buttons
+    prob_chart_button = ttk.Button(buttons_btm, text="Probability Chart", style="Accent.TButton",
+                                       command=show_probability_chart)
+    prob_chart_button.grid(row=0, column=0, padx=5, pady=5)
+    spider_chart_button = ttk.Button(buttons_btm, text="Spider Chart", style="Accent.TButton",
+                                         command=show_spider_chart)
+    spider_chart_button.grid(row=0, column=1, padx=5, pady=5)
 
-# View Cache Stats Button
-view_cache_button = ttk.Button(buttons_top, text="View Cache Stats", style="Accent.TButton", command=lambda: DB.view_cache_stats(CACHE_DB, root))
-view_cache_button.grid(row=0, column=2, padx=5, pady=5)
+    # Progress Bar
+    progress_frame = tk.Frame(root)
+    progress_frame.pack()
+    progress_var = tk.StringVar(value="Idle")
+    progress_label = tk.Label(progress_frame, textvariable=progress_var)
+    progress_label.grid(row=0, column=0, padx=5, pady=5)
 
-# Graph Buttons
-prob_chart_button = ttk.Button(buttons_btm, text="Probability Chart", style="Accent.TButton", command=show_probability_chart)
-prob_chart_button.grid(row=0, column=0, padx=5, pady=5)
-spider_chart_button = ttk.Button(buttons_btm, text="Spider Chart", style="Accent.TButton", command=show_spider_chart)
-spider_chart_button.grid(row=0, column=1, padx=5, pady=5)
+    progressbar = ttk.Progressbar(progress_frame, mode="indeterminate")
+    progressbar.grid(row=0, column=1, padx=5, pady=5)
 
-# Progress Bar
-progress_frame = tk.Frame(root)
-progress_frame.pack()
-progress_var = tk.StringVar(value="Idle")
-progress_label = tk.Label(progress_frame, textvariable=progress_var)
-progress_label.grid(row=0, column=0, padx=5, pady=5)
+    graph_frame = tk.Frame(root)
+    graph_frame.pack(fill='both', expand=True)
 
-progressbar = ttk.Progressbar(progress_frame, mode="indeterminate")
-progressbar.grid(row=0, column=1, padx=5, pady=5)
+    current_results = None
 
-graph_frame = tk.Frame(root)
-graph_frame.pack(fill='both', expand=True)
-
-current_results = None
-
-# --------------------------
-# FINAL
-# --------------------------
-def on_closing():
-    stop_driver()
-    root.destroy()
+    # --------------------------
+    # FINAL
+    # --------------------------
+    def on_closing():
+        stop_driver()
+        root.destroy()
 
 
-root.protocol("WM_DELETE_WINDOW", on_closing)
+    root.protocol("WM_DELETE_WINDOW", on_closing)
 
-def load_model_file():
-    if not os.path.isfile(MODEL_DIR):
-        raise FileNotFoundError(f"Model file not found at {MODEL_DIR}")
-    return joblib.load(MODEL_DIR)
+    def load_model_file():
+        if not os.path.isfile(MODEL_DIR):
+            raise FileNotFoundError(f"Model file not found at {MODEL_DIR}")
+        return joblib.load(MODEL_DIR)
 
-# Load the model
-model = load_model_file()
+    # Load the model
+    model = load_model_file()
 
-root.mainloop()
+    root.mainloop()

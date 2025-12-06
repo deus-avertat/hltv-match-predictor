@@ -25,7 +25,9 @@ class Utils:
     # Get the date range where range = months to subtract
     def get_date_range(range):
         delta = date.today() - relativedelta(months=range)
-        date_range = f"?startDate={delta.strftime("%Y-%m-%d")}&endDate={date.today().strftime('%Y-%m-%d')}"
+        date_range = (
+            f"?startDate={delta.strftime('%Y-%m-%d')}&endDate={date.today().strftime('%Y-%m-%d')}"
+        )
         return date_range
 
     @staticmethod
