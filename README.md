@@ -13,19 +13,29 @@ This scraper currently works for HLTV as of **December 2025**. If HLTV ever upda
 github/
 ├── pipeline_gui.py               # Main pipeline script for predicting outcomes
 │
-├── model/
-│   └── cs2_model.pkl             # Trained machine learning model
+├── config/
+│   └── cookies.json              # Stores user cookies for HLTV to prevent Cloudflare errors
 │
 ├── data/
 │   ├── cache.db                  # Database of predicted matches (refreshes every 12 hours)
 │   ├── hltv_data.json            # Team, map, and player data from the scraper.  
 │   └── processed_matches.json    # List of matches already scraped (stops scraper from scraping the same match)
 │
+├── model/
+│   └── cs2_model.pkl             # Trained machine learning model
+│
 ├── scraper/
 │   └── scraping.py               # Script for scraping HLTV and outputting to a file to train on
 │
 ├── trainer/
 │   └── train.py                  # Script for training the model usingt the outputted scraper file.
+│
+├── ui/
+│   ├── forest-dark/              # Dark mode Tkinter theme resources
+│   ├── forest-light/             # Light mode Tkinter theme resources
+│   ├── forest-dark.tcl           # Dark mode Tkinter theme file
+│   ├── forest-light.tcl          # Light mode Tkinter theme file
+│   └── stats_gui.py              # GUI for viewing the current stats stored in hltv_data.json
 │
 ├── utils/
 │   └── database.py               # Stores helper functions for the database
