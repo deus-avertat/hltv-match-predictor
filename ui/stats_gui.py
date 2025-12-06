@@ -63,7 +63,14 @@ class StatsData:
 
                 for player in team_data.get("players", []) or []:
                     player_name = player.get("name") or "Unknown"
-                    team_record["players"][player_name]["stats"].extend(player.get("stats", []))
+                    dated_stats = []
+
+                    for stat in player.get("stats", []) or []:
+                        stat_copy = dict(stat)
+                        stat_copy.setdefault("date", date)
+                        dated_stats.append(stat_copy)
+
+                    team_record["players"][player_name]["stats"].extend(dated_stats)
 
         for team in teams.values():
             team["matches"].sort(key=lambda m: self._parse_date(m.get("date")))
@@ -210,13 +217,17 @@ class StatsGUI:
         self.player_summary_var = tk.StringVar()
         ttk.Label(players_frame, textvariable=self.player_summary_var, justify=tk.LEFT).grid(row=1, column=0, sticky="w", pady=5)
 
-        self.player_stats_tree = ttk.Treeview(players_frame, columns=("map", "kd", "rating"), show="headings", height=6)
+        self.player_stats_tree = ttk.Treeview(
+            players_frame, columns=("map", "kd", "rating", "date"), show="headings", height=6
+        )
         self.player_stats_tree.heading("map", text="Map")
         self.player_stats_tree.heading("kd", text="K/D")
         self.player_stats_tree.heading("rating", text="Rating")
-        self.player_stats_tree.column("map", width=140)
+        self.player_stats_tree.heading("date", text="Date")
+        self.player_stats_tree.column("map", width=80)
         self.player_stats_tree.column("kd", width=80, anchor="center")
-        self.player_stats_tree.column("rating", width=100, anchor="center")
+        self.player_stats_tree.column("rating", width=80, anchor="center")
+        self.player_stats_tree.column("date", width=80, anchor="center")
         self.player_stats_tree.grid(row=2, column=0, sticky="nsew")
 
         matches_frame = ttk.LabelFrame(self.team_tab, text="Matches", padding=10)
@@ -305,7 +316,7 @@ class StatsGUI:
             self.player_stats_tree.insert(
                 "",
                 tk.END,
-                values=(stat.get("map", "Unknown"), stat.get("kd", ""), stat.get("rating2.0", "")),
+                values=(stat.get("map", "Unknown"), stat.get("kd", ""), stat.get("rating2.0", ""), stat.get("date", "Unknown")),
             )
 
     def run(self):

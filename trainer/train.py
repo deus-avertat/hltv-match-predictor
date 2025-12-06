@@ -20,21 +20,20 @@ def average_player_stats(team):
 
 def process_match(match):
     print(f"[INFO] Processing match")
-    features = {}
-    features['team1_valve_points'] = match['team1']['valve_points']
-    features['team2_valve_points'] = match['team2']['valve_points']
-    features['team1_win_rate'] = match['team1']['win_rate']
-    features['team2_win_rate'] = match['team2']['win_rate']
-    features['team1_map_win_rate'] = match['team1']['map_win_rate']
-    features['team2_map_win_rate'] = match['team2']['map_win_rate']
-    features['team1_h2h_winrate'] = match['head_to_head']['team1_winrate']
-    features['team2_h2h_winrate'] = match['head_to_head']['team2_winrate']
-    features['team1_recent_wins'] = sum([1 if r == 'W' else 0 for r in match['team1']['recent_matches']])
-    features['team2_recent_wins'] = sum([1 if r == 'W' else 0 for r in match['team2']['recent_matches']])
+    features = {'team1_valve_points': match['team1']['valve_points'],
+                'team2_valve_points': match['team2']['valve_points'], 'team1_win_rate': match['team1']['win_rate'],
+                'team2_win_rate': match['team2']['win_rate'], 'team1_map_win_rate': match['team1']['map_win_rate'],
+                'team2_map_win_rate': match['team2']['map_win_rate'],
+                'team1_h2h_winrate': match['head_to_head']['team1_winrate'],
+                'team2_h2h_winrate': match['head_to_head']['team2_winrate'],
+                'team1_recent_wins': sum([1 if r == 'W' else 0 for r in match['team1']['recent_matches']]),
+                'team2_recent_wins': sum([1 if r == 'W' else 0 for r in match['team2']['recent_matches']]),
+                'team1_avg_rating': (average_player_stats(match['team1']))[0],
+                'team1_avg_kd': (average_player_stats(match['team1']))[1],
+                'team2_avg_rating': (average_player_stats(match['team2']))[0],
+                'team2_avg_kd': (average_player_stats(match['team2']))[1],
+                'result': 1 if match['result'] == 'team1' else 0}
 
-    features['team1_avg_rating'], features['team1_avg_kd'] = average_player_stats(match['team1'])
-    features['team2_avg_rating'], features['team2_avg_kd'] = average_player_stats(match['team2'])
-    features['result'] = 1 if match['result'] == 'team1' else 0
     return features
 
 def prepare_dataset(data):

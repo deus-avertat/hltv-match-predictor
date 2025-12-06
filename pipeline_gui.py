@@ -615,8 +615,12 @@ root.config(menu=menubar)
 file_menu = tk.Menu(menubar, tearoff=False)
 menubar.add_cascade(label="File", menu=file_menu)
 file_menu.add_command(label="Settings", command=open_settings_window)
-file_menu.add_command(label="Data Statistics", command=open_stats_window)
 file_menu.add_command(label="Exit", command=close_main_window)
+
+# Data Menu
+data_menu = tk.Menu(menubar, tearoff=False)
+menubar.add_cascade(label="Data", menu=data_menu)
+data_menu.add_command(label="HLTV Stats", command=open_stats_window)
 
 # Clear previous embedded graph
 def clear_graph():
