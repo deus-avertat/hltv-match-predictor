@@ -196,7 +196,26 @@ def get_winrate(url):
         return cached
 
     html = fetch_page(url)
-    stats = html.find_all(class_='large-strong')[1].text
+    if html is None:
+        Utils.status_cb(f"Failed to fetch winrate page for {url}", result_text, progress_var, "warn")
+        print(f"Failed to fetch winrate page for {url}")
+        DB.cache_set(db_key, 0, CACHE_DB)
+        return 0
+
+    stats_nodes = html.find_all(class_="large-strong")
+    if len(stats_nodes) < 2:
+        Utils.status_cb(f"Winrate stats not found for {url}", result_text, progress_var, "warn")
+        print(f"Winrate stats not found for {url}")
+        DB.cache_set(db_key, 0, CACHE_DB)
+        return 0
+
+    stats = stats_nodes[1].text
+    if " / " not in stats:
+        Utils.status_cb(f"Unexpected winrate format for {url}", result_text, progress_var, "warn")
+        print(f"Unexpected winrate format for {url}")
+        DB.cache_set(db_key, 0, CACHE_DB)
+        return 0
+
     w, d, l = map(int, stats.split(" / "))
     winrate = 0 if (w + d + l) == 0 else round(w / (w + d + l) * 100, 1)
 
@@ -211,7 +230,33 @@ def get_map_winrate(url):
         return cached
 
     html = fetch_page(url)
-    map_stats = html.find_all(class_='stats-row')[1].find_all('span')[1].text
+    if html is None:
+        Utils.status_cb(f"Failed to fetch map winrate page for {url}", result_text, progress_var, "warn")
+        print(f"Failed to fetch map winrate page for {url}")
+        DB.cache_set(db_key, 0, CACHE_DB)
+        return 0
+
+    rows = html.find_all(class_='stats-row')
+    if len(rows) < 2:
+        Utils.status_cb(f"Map stats not found for {url}", result_text, progress_var, "warn")
+        print(f"Map stats not found for {url}")
+        DB.cache_set(db_key, 0, CACHE_DB)
+        return 0
+
+    spans = rows[1].find_all('span')
+    if len(spans) < 2:
+        Utils.status_cb(f"Map winrate spans missing for {url}", result_text, progress_var, "warn")
+        print(f"Map winrate spans missing for {url}")
+        DB.cache_set(db_key, 0, CACHE_DB)
+        return 0
+
+    map_stats = spans[1].text
+    if " / " not in map_stats:
+        Utils.status_cb(f"Unexpected map winrate format for {url}", result_text, progress_var, "warn")
+        print(f"Unexpected map winrate format for {url}")
+        DB.cache_set(db_key, 0, CACHE_DB)
+        return 0
+
     w, d, l = map(int, map_stats.split(" / "))
     winrate = 0 if (w + d + l) == 0 else round(w / (w + d + l) * 100, 1)
 
@@ -229,6 +274,12 @@ def get_player_stats(name, player_id, date):
     url = f"https://www.hltv.org/stats/players/matches/{player_id}/{name}?startDate={(date - timedelta(days=90)).strftime('%Y-%m-%d')}&endDate={key_date}"
     html = fetch_page(url)
 
+    if html is None:
+        Utils.status_cb(f"Failed to fetch player page for {url}", result_text, progress_var, "warn")
+        print(f"[WARN] Failed to fetch player page for {name} ({player_id}).")
+        DB.cache_set(db_key, [], CACHE_DB)
+        return []
+
     table = html.find(class_='stats-table')
     if table is None:
         print(f"[ERROR] No player stats-table found for {name} ({player_id})")
@@ -238,10 +289,25 @@ def get_player_stats(name, player_id, date):
 
     stats = []
     for match in matches:
-        map_name = match.find(class_='statsMapPlayed').text.strip()
-        k, d = map(int, match.find(class_='statsCenterText').text.strip().split('-'))
+        map_node = match.find(class_='statsMapPlayed')
+        center_text = match.find(class_='statsCenterText')
+        rating_node = match.find(class_=["match-lost", "match-won"])
+
+        if not (map_node and center_text and rating_node):
+            Utils.status_cb(f"Incomplete player match data for {name} ({player_id}), skipping entry.", result_text, progress_var, "warn")
+            print(f"[WARN] Incomplete player match data for {name} ({player_id}), skipping entry.")
+            continue
+
+        center_text_value = center_text.text.strip()
+        if "-" not in center_text_value:
+            Utils.status_cb(f"Unexpected player KD format for {name} ({player_id}): {center_text}", result_text, progress_var, "warn")
+            print(f"[WARN] Unexpected player KD format for {name} ({player_id}): {center_text_value}")
+            continue
+
+        map_name = map_node.text.strip()
+        k, d = map(int, center_text_value.split('-'))
         d = max(d, 1)
-        rating = float(match.find(class_=["match-lost", "match-won"]).text.strip())
+        rating = float(rating_node.text.strip())
         stats.append({
             "rating2.0": rating,
             "kd": round(k / d, 2),
