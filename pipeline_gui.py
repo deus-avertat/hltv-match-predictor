@@ -478,8 +478,31 @@ def prepare_match_all_maps(url):
 
 
 def average_player_stats(team):
-    avg_rating = np.mean([stat['rating2.0'] for player in team['players'] for stat in player['stats']])
-    avg_kd = np.mean([stat['kd'] for player in team['players'] for stat in player['stats']])
+    ratings = []
+    kds = []
+
+    for player in team.get('players', []):
+        for stat in player.get('stats', []):
+            rating = stat.get('rating2.0')
+            kd = stat.get('kd')
+
+            if rating is not None:
+                ratings.append(rating)
+            if kd is not None:
+                kds.append(kd)
+
+    if not ratings or not kds:
+        if Utils.status_cb:
+            Utils.status_cb(
+                f"Player stats unavailable for {team.get('name', 'team')}; using defaults.",
+                result_text,
+                progress_var,
+                "warn",
+            )
+        return 0.0, 0.0
+
+    avg_rating = np.mean(ratings)
+    avg_kd = np.mean(kds)
     return avg_rating, avg_kd
 
 
