@@ -733,13 +733,46 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
         # Model Metadata
         model_info_frame = ttk.LabelFrame(win, text="Model Info")
         model_info_frame.pack(fill="x", padx=10, pady=10)
-        model_info_var = tk.StringVar()
-        model_info_label = tk.Label(model_info_frame, textvariable=model_info_var, justify="left", anchor="w")
-        model_info_label.pack(fill="x", padx=10, pady=5)
+        model_info_content = ttk.Frame(model_info_frame)
+        model_info_content.pack(fill="x", padx=10, pady=5)
+
+        def render_model_info(metadata):
+            for child in model_info_content.winfo_children():
+                child.destroy()
+
+            metadata_text = _model_metadata_text(metadata)
+            for line in metadata_text.splitlines():
+                label, value = (line.split(":", 1) + [""])[:2] if ":" in line else ("Info", line)
+                row = ttk.Frame(model_info_content)
+                row.pack(fill="x", pady=2)
+                ttk.Label(row, text=f"{label.strip()}:", width=14, anchor="w").pack(side="left")
+
+                value_label = tk.Label(row, text=value.strip(), anchor="w", justify="left")
+                if label.strip().lower() == "status":
+                    status_text = value.strip().lower()
+                    status_color = "#d9534f" if any(
+                        err in status_text for err in ["error", "fail", "not found"]) else "#4caf50"
+                    value_label.configure(fg=status_color)
+
+                value_label.pack(side="left", fill="x", expand=True)
 
         def refresh_model_info():
             metadata = _format_model_metadata(model_var.get())
-            model_info_var.set(_model_metadata_text(metadata))
+            render_model_info(metadata)
+
+        def choose_model_file():
+            selected = filedialog.askopenfilename(title="Select Model File",
+                                                  filetypes=[("Pickle Files", "*.pkl"), ("All Files", "*.*")])
+            if selected:
+                model_var.set(selected)
+                refresh_model_info()
+
+        ttk.Button(model_info_frame, text="Refresh Metadata", style="Accent.TButton", command=refresh_model_info).pack(
+            side="left", padx=(10, 5), pady=(0, 10)
+        )
+        ttk.Button(model_info_frame, text="Change Model", command=choose_model_file).pack(
+            side="left", padx=(0, 10), pady=(0, 10)
+        )
 
         refresh_model_info()
 
