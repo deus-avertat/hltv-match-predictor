@@ -28,12 +28,14 @@ DEFAULT_MODEL_DIR = os.path.join(BASE_DIR, "model", "cs2_model.pkl")
 DEFAULT_CACHE_DB = os.path.join(BASE_DIR, "data", "cache.db")
 DEFAULT_CACHE_EXPIRY_HOURS = 12
 DEFAULT_HEADLESS = False
+DEFAULT_THEME_PREF = "system"
 
 CACHE_EXPIRY_HOURS = DEFAULT_CACHE_EXPIRY_HOURS
 CACHE_DB = DEFAULT_CACHE_DB
 MODEL_DIR = DEFAULT_MODEL_DIR
 
 HEADLESS_MODE = DEFAULT_HEADLESS
+THEME_PREFERENCE = DEFAULT_THEME_PREF
 
 # --------------------------
 # SETTINGS
@@ -43,27 +45,32 @@ def _normalize_settings(settings):
     dcdb = settings.get("cache_db_path", DEFAULT_CACHE_DB)
     dmd = settings.get("model_path", DEFAULT_MODEL_DIR)
     headless = settings.get("headless", DEFAULT_HEADLESS)
+    theme_pref = settings.get("theme", DEFAULT_THEME_PREF)
 
     if isinstance(headless, str):
         headless_normalized = headless.strip().lower() in {"1", "true", "yes", "on"}
     else:
         headless_normalized = bool(headless)
 
+    theme_normalized = Settings.normalize_theme(theme_pref, DEFAULT_THEME_PREF)
+
     normalized = {
         "cache_expiry_hours": Cache.normalize_cache_expiry(dev, DEFAULT_CACHE_EXPIRY_HOURS),
         "cache_db_path": Cache.validate_cache_db_path(dcdb, DEFAULT_CACHE_DB, BASE_DIR),
         "model_path": Cache.validate_model_path(dmd, DEFAULT_MODEL_DIR),
         "headless": headless_normalized,
+        "theme": theme_normalized,
     }
     return normalized
 
 def apply_settings(settings):
-    global CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR, HEADLESS_MODE
+    global CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR, HEADLESS_MODE, THEME_PREFERENCE
     normalized = _normalize_settings(settings)
     CACHE_EXPIRY_HOURS = normalized["cache_expiry_hours"]
     CACHE_DB = normalized["cache_db_path"]
     MODEL_DIR = normalized["model_path"]
     HEADLESS_MODE = normalized["headless"]
+    THEME_PREFERENCE = normalized["theme"]
     return normalized
 
 def persist_settings(settings):
@@ -91,6 +98,15 @@ def load_settings():
 
 
 load_settings()
+
+def _current_settings_snapshot(theme_override=None):
+    return Settings.get_active_settings(
+        CACHE_EXPIRY_HOURS,
+        CACHE_DB,
+        MODEL_DIR,
+        HEADLESS_MODE,
+        theme_override or THEME_PREFERENCE,
+    )
 
 def _format_model_metadata(path):
     metadata = {"path": os.path.abspath(path) if path else ""}
@@ -651,8 +667,26 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
     style = ttk.Style(root)
     root.tk.call('source', os.path.join(BASE_DIR, "ui", "forest-light.tcl"))
     root.tk.call('source', os.path.join(BASE_DIR, "ui", "forest-dark.tcl"))
-    is_dark = Utils.detect_dark_mode()
-    ttk.Style(root).theme_use("forest-dark" if is_dark else "forest-light")
+    theme_var = tk.StringVar(value=THEME_PREFERENCE)
+
+    def apply_theme(preference=None, persist_choice=False):
+        global THEME_PREFERENCE
+
+        pref = Settings.normalize_theme(preference or theme_var.get(), DEFAULT_THEME_PREF)
+        THEME_PREFERENCE = pref
+        theme_var.set(pref)
+        theme_name = "forest-dark" if Settings.is_dark_theme(pref) else "forest-light"
+        ttk.Style(root).theme_use(theme_name)
+
+        if persist_choice:
+            normalized = persist_settings(_current_settings_snapshot(pref))
+            theme_var.set(normalized["theme"])
+            THEME_PREFERENCE = normalized["theme"]
+
+        return theme_name
+
+
+    apply_theme(theme_var.get())
 
     # Windows
     def open_settings_window():
@@ -660,7 +694,7 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
         win.title("Settings")
         win.geometry("430x520")
 
-        settings = Settings.get_active_settings(CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR, HEADLESS_MODE)
+        settings = _current_settings_snapshot(theme_var.get())
 
         tk.Label(win, text="Settings Panel", font=("Arial", 14, "bold")).pack(pady=10)
 
@@ -684,8 +718,17 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
         ttk.Button(win, text="Browse", style="Accent.TButton", command=lambda: model_var.set(filedialog.askopenfilename())).pack(pady=2)
 
         # Headless Mode
-        headless_var = tk.BooleanVar(value=settings.get("headless_mode", HEADLESS_MODE))
+        headless_var = tk.BooleanVar(value=settings.get("headless", HEADLESS_MODE))
         ttk.Checkbutton(win, text="Headless Mode", variable=headless_var).pack(pady=5)
+
+        # Theme Preference
+        tk.Label(win, text="Theme:").pack(pady=(10, 2))
+        theme_frame = ttk.Frame(win)
+        theme_frame.pack(pady=2)
+        theme_choice = tk.StringVar(value=settings.get("theme", theme_var.get()))
+        ttk.Radiobutton(theme_frame, text="System", value="system", variable=theme_choice).pack(side="left", padx=5)
+        ttk.Radiobutton(theme_frame, text="Light", value="light", variable=theme_choice).pack(side="left", padx=5)
+        ttk.Radiobutton(theme_frame, text="Dark", value="dark", variable=theme_choice).pack(side="left", padx=5)
 
         # Model Metadata
         model_info_frame = ttk.LabelFrame(win, text="Model Info")
@@ -706,12 +749,16 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
                 "cache_db_path": cache_var.get(),
                 "model_path": model_var.get(),
                 "headless": headless_var.get(),
+                "theme": theme_choice.get(),
             }
             normalized = persist_settings(new_settings)
             expiry_var.set(str(normalized["cache_expiry_hours"]))
             cache_var.set(normalized["cache_db_path"])
             model_var.set(normalized["model_path"])
-            headless_var.set(normalized["headless_mode"])
+            headless_var.set(normalized["headless"])
+            theme_choice.set(normalized["theme"])
+            theme_var.set(normalized["theme"])
+            apply_theme(normalized["theme"])
             refresh_model_info()
             stop_driver()
             Utils.status_cb("Settings updated and saved.", result_text, progress_var, level="good")
@@ -752,6 +799,28 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
     data_menu = tk.Menu(menubar, tearoff=False)
     menubar.add_cascade(label="Data", menu=data_menu)
     data_menu.add_command(label="HLTV Stats", command=open_stats_window)
+
+    # Theme Menu
+    theme_menu = tk.Menu(menubar, tearoff=False)
+    menubar.add_cascade(label="Theme", menu=theme_menu)
+    theme_menu.add_radiobutton(
+        label="System",
+        value="system",
+        variable=theme_var,
+        command=lambda: apply_theme("system", persist_choice=True),
+    )
+    theme_menu.add_radiobutton(
+        label="Light",
+        value="light",
+        variable=theme_var,
+        command=lambda: apply_theme("light", persist_choice=True),
+    )
+    theme_menu.add_radiobutton(
+        label="Dark",
+        value="dark",
+        variable=theme_var,
+        command=lambda: apply_theme("dark", persist_choice=True),
+    )
 
     # Clear previous embedded graph
     def clear_graph():

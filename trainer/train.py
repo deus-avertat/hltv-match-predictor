@@ -13,13 +13,13 @@ def load_data(filepath):
     return data
 
 def average_player_stats(team):
-    print(f"[INFO] Calculating average player stats")
+    print(f"[INFO] Calculating average player stats for {team}")
     avg_rating = np.mean([stat['rating2.0'] for player in team['players'] for stat in player['stats']])
     avg_kd = np.mean([stat['kd'] for player in team['players'] for stat in player['stats']])
     return avg_rating, avg_kd
 
 def process_match(match):
-    print(f"[INFO] Processing match")
+    print(f"[INFO] Processing match: {match}")
     features = {'team1_valve_points': match['team1']['valve_points'],
                 'team2_valve_points': match['team2']['valve_points'], 'team1_win_rate': match['team1']['win_rate'],
                 'team2_win_rate': match['team2']['win_rate'], 'team1_map_win_rate': match['team1']['map_win_rate'],

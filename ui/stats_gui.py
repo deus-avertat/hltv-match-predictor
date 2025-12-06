@@ -1,15 +1,22 @@
 import json
 import os
+import sys
 from collections import Counter, defaultdict
 from datetime import datetime
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+from utils.helpers import Settings  # noqa: E402
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_FILE = os.path.join(BASE_DIR, "data", "hltv_data.json")
-THEME_FILE = os.path.join(BASE_DIR, "ui", "forest-dark.tcl")
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
+DATA_FILE = os.path.join(BASE_DIR, "data", "hltv_data.json")
+THEME_FILES = {
+    "light": os.path.join(BASE_DIR, "ui", "forest-light.tcl"),
+    "dark": os.path.join(BASE_DIR, "ui", "forest-dark.tcl"),
+}
 
 class StatsData:
     """Load and aggregate match, team, and player statistics."""
@@ -148,9 +155,26 @@ class StatsGUI:
         self._populate_summary()
 
     def _setup_theme(self):
-        if os.path.exists(THEME_FILE):
-            self.root.tk.call("source", THEME_FILE)
-            ttk.Style(self.root).theme_use("forest-dark")
+        for theme_path in THEME_FILES.values():
+            if os.path.exists(theme_path):
+                self.root.tk.call("source", theme_path)
+
+        preference = self._load_theme_preference()
+        theme_name = "forest-dark" if Settings.is_dark_theme(preference) else "forest-light"
+        ttk.Style(self.root).theme_use(theme_name)
+
+    def _load_theme_preference(self) -> str:
+        settings_path = Settings.settings_path(BASE_DIR)
+        if not os.path.exists(settings_path):
+            return "system"
+
+        try:
+            with open(settings_path, "r") as f:
+                settings = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            return "system"
+
+        return Settings.normalize_theme(settings.get("theme", "system"))
 
     def _build_layout(self):
         self.root.geometry("1100x750")

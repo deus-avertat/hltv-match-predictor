@@ -82,6 +82,16 @@ class Utils:
         # FALLBACK
         return False
 
+def _normalize_theme_preference(preference: str, default: str = "system") -> str:
+    """Return a safe theme preference value."""
+
+    valid = {"light", "dark", "system"}
+    if isinstance(preference, str):
+        normalized = preference.strip().lower()
+        if normalized in valid:
+            return normalized
+    return default
+
 class Cache:
     @staticmethod
     def normalize_cache_expiry(expiry_value, default_expiry_value):
@@ -123,10 +133,24 @@ class Settings:
         return os.path.join(directory, path)
 
     @staticmethod
-    def get_active_settings(ceh, cdb, mdir, headless=False):
+    def get_active_settings(ceh, cdb, mdir, headless=False, theme="system"):
         return {
             "cache_expiry_hours": ceh,
             "cache_db_path": cdb,
             "model_path": mdir,
             "headless": headless,
+            "theme": _normalize_theme_preference(theme),
         }
+
+    @staticmethod
+    def normalize_theme(preference: str, default: str = "system") -> str:
+        return _normalize_theme_preference(preference, default)
+
+    @staticmethod
+    def is_dark_theme(preference: str) -> bool:
+        normalized = Settings.normalize_theme(preference)
+        if normalized == "dark":
+            return True
+        if normalized == "light":
+            return False
+        return Utils.detect_dark_mode()
