@@ -1,3 +1,4 @@
+import atexit
 import os
 import subprocess
 import sys
@@ -28,10 +29,13 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_MODEL_DIR = os.path.join(BASE_DIR, "model", "cs2_model.pkl")
 DEFAULT_CACHE_DB = os.path.join(BASE_DIR, "data", "cache.db")
 DEFAULT_CACHE_EXPIRY_HOURS = 12
+DEFAULT_HEADLESS = False
 
 CACHE_EXPIRY_HOURS = DEFAULT_CACHE_EXPIRY_HOURS
 CACHE_DB = DEFAULT_CACHE_DB
 MODEL_DIR = DEFAULT_MODEL_DIR
+
+HEADLESS_MODE = DEFAULT_HEADLESS
 
 # --------------------------
 # SETTINGS
@@ -40,19 +44,28 @@ def _normalize_settings(settings):
     dev = settings.get("cache_expiry_hours", DEFAULT_CACHE_EXPIRY_HOURS)
     dcdb = settings.get("cache_db_path", DEFAULT_CACHE_DB)
     dmd = settings.get("model_path", DEFAULT_MODEL_DIR)
+    headless = settings.get("headless", DEFAULT_HEADLESS)
+
+    if isinstance(headless, str):
+        headless_normalized = headless.strip().lower() in {"1", "true", "yes", "on"}
+    else:
+        headless_normalized = bool(headless)
+
     normalized = {
         "cache_expiry_hours": Cache.normalize_cache_expiry(dev, DEFAULT_CACHE_EXPIRY_HOURS),
         "cache_db_path": Cache.validate_cache_db_path(dcdb, DEFAULT_CACHE_DB, BASE_DIR),
         "model_path": Cache.validate_model_path(dmd, DEFAULT_MODEL_DIR),
+        "headless": headless_normalized,
     }
     return normalized
 
 def apply_settings(settings):
-    global CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR
+    global CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR, HEADLESS_MODE
     normalized = _normalize_settings(settings)
     CACHE_EXPIRY_HOURS = normalized["cache_expiry_hours"]
     CACHE_DB = normalized["cache_db_path"]
     MODEL_DIR = normalized["model_path"]
+    HEADLESS_MODE = normalized["headless"]
     return normalized
 
 def persist_settings(settings):
@@ -128,13 +141,36 @@ reverse_map_team_dict = {v: k for k, v in map_team_dict.items()}
 # --------------------------
 # CHROME DRIVER
 # --------------------------
-driver = Driver.get_driver()
-driver.execute_cdp_cmd("Network.enable", {})
-driver.execute_cdp_cmd("Network.setBlockedURLs", {"urls": Dictionary.adblock_list})
+driver = None
+_driver_lock = threading.Lock()
+
+def start_driver():
+    global driver
+    with _driver_lock:
+        if driver is None:
+            Utils.status_cb("Starting driver...", result_text, progress_var, "good")
+            driver = Driver.get_driver(headless=HEADLESS_MODE)
+            driver.execute_cdp_cmd("Network.enable", {})
+            driver.execute_cdp_cmd("Network.setBlockedURLs", {"urls": Dictionary.adblock_list})
+        return driver
+
+def stop_driver():
+    global driver
+    with _driver_lock:
+        if driver is not None:
+            try:
+                Utils.status_cb("Stopping driver...", result_text, progress_var, "good")
+                driver.quit()
+            except Exception:
+                pass
+            driver = None
+
+atexit.register(stop_driver)
 
 def fetch_page(url):
-    driver.get(url)
-    html = driver.page_source
+    active_driver = start_driver()
+    active_driver.get(url)
+    html = active_driver.page_source
     return BeautifulSoup(html, "html.parser")
 
 
@@ -532,9 +568,9 @@ ttk.Style(root).theme_use("forest-dark" if is_dark else "forest-light")
 def open_settings_window():
     win = tk.Toplevel(root)
     win.title("Settings")
-    win.geometry("430x460")
+    win.geometry("430x520")
 
-    settings = Settings.get_active_settings(CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR)
+    settings = Settings.get_active_settings(CACHE_EXPIRY_HOURS, CACHE_DB, MODEL_DIR, HEADLESS_MODE)
 
     tk.Label(win, text="Settings Panel", font=("Arial", 14, "bold")).pack(pady=10)
 
@@ -557,6 +593,10 @@ def open_settings_window():
     model_entry.pack()
     ttk.Button(win, text="Browse", style="Accent.TButton", command=lambda: model_var.set(filedialog.askopenfilename())).pack(pady=2)
 
+    # Headless Mode
+    headless_var = tk.BooleanVar(value=settings.get("headless_mode", HEADLESS_MODE))
+    ttk.Checkbutton(win, text="Headless Mode", variable=headless_var).pack(pady=5)
+
     # Model Metadata
     model_info_frame = ttk.LabelFrame(win, text="Model Info")
     model_info_frame.pack(fill="x", padx=10, pady=10)
@@ -574,13 +614,16 @@ def open_settings_window():
         new_settings = {
             "cache_expiry_hours": expiry_var.get(),
             "cache_db_path": cache_var.get(),
-            "model_path": model_var.get()
+            "model_path": model_var.get(),
+            "headless": headless_var.get(),
         }
         normalized = persist_settings(new_settings)
         expiry_var.set(str(normalized["cache_expiry_hours"]))
         cache_var.set(normalized["cache_db_path"])
         model_var.set(normalized["model_path"])
+        headless_var.set(normalized["headless_mode"])
         refresh_model_info()
+        stop_driver()
         Utils.status_cb("Settings updated and saved.", result_text, progress_var,  level="good")
         win.destroy()
 
@@ -588,10 +631,7 @@ def open_settings_window():
     ttk.Button(win, text="Close", style="Accent.TButton", command=win.destroy).pack(pady=5)
 
 def close_main_window():
-    try:
-        driver.quit()
-    except:
-        pass
+    stop_driver()
     root.destroy()
 
 def open_stats_window():
@@ -688,10 +728,7 @@ current_results = None
 # FINAL
 # --------------------------
 def on_closing():
-    try:
-        driver.quit()
-    except:
-        pass
+    stop_driver()
     root.destroy()
 
 

@@ -21,7 +21,7 @@ reverse_map_team_dict = {v: k for k, v in map_team_dict.items()}
 
 # Date range for filtering
 START_DATE = datetime(2025, 10, 1)
-END_DATE = datetime(2025, 12, 5)
+END_DATE = datetime(2025, 12, 6)
 
 request_count = 0
 

@@ -121,9 +121,10 @@ class Settings:
         return os.path.join(directory, path)
 
     @staticmethod
-    def get_active_settings(ceh, cdb, mdir):
+    def get_active_settings(ceh, cdb, mdir, headless=False):
         return {
             "cache_expiry_hours": ceh,
             "cache_db_path": cdb,
             "model_path": mdir,
+            "headless": headless,
         }
