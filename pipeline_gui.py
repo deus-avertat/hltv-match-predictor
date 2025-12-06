@@ -692,7 +692,7 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
     def open_settings_window():
         win = tk.Toplevel(root)
         win.title("Settings")
-        win.geometry("430x520")
+        win.geometry("430x620")
 
         settings = _current_settings_snapshot(theme_var.get())
 

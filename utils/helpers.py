@@ -1,3 +1,4 @@
+import importlib
 import json
 import os
 import platform
@@ -46,7 +47,11 @@ class Utils:
 
         # WINDOWS
         if system == "Windows":
+            winreg_spec = importlib.util.find_spec("winreg")
+            if winreg_spec is None:
+                return False  # fallback: assume light mode
             try:
+                winreg = importlib.import_module("winreg")
                 registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
                 key = winreg.OpenKey(
                     registry,
