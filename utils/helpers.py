@@ -1,14 +1,12 @@
 import importlib
-import json
 import os
 import platform
 import subprocess
 import tkinter as tk
-import winreg
 from datetime import date, datetime
-from tkinter import filedialog
 
 from dateutil.relativedelta import relativedelta
+
 
 class Utils:
     @staticmethod
