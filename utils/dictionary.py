@@ -39,6 +39,7 @@ class Dictionary:
         "*://*.googlesyndication.com/*",
         "*://*.googleadservices.com/*",
         "*://*.doubleclick.net/*",
+        "*://*.*.doubleclick.net/*",
         "*://*.google-analytics.com/*",
         "*://*.analytics.google.com/*",
         "*://*.outbrain.com/*",
@@ -58,4 +59,13 @@ class Dictionary:
         "*://*.script.ac/*",
         "*://*.script.ac/d23sa75evsxrsv/*",
         "*://*.allstar.gg/*",
+        "*://*.eyeota.net/*",
+        "*://*.clarity.ms/*",
+        "*://*.amazon-adsystem.com/*",
+        "*://*.crwdcntrl.net/*",
+        "*://*.liadm.com/*",
+        "*://id5-sync.com/*",
+        "*://*.criteo.com/*",
+        "*://*.33across.com/*",
+        "*://featureassets.org/*"
     ]

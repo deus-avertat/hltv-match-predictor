@@ -246,32 +246,13 @@ def get_map_winrate(url):
         return cached
 
     html = fetch_page(url)
-    if html is None:
-        Utils.status_cb(f"Failed to fetch map winrate page for {url}", result_text, progress_var, "warn")
-        print(f"Failed to fetch map winrate page for {url}")
-        DB.cache_set(db_key, 0, CACHE_DB)
-        return 0
 
-    rows = html.find_all(class_='stats-row')
-    if len(rows) < 2:
-        Utils.status_cb(f"Map stats not found for {url}", result_text, progress_var, "warn")
-        print(f"Map stats not found for {url}")
-        DB.cache_set(db_key, 0, CACHE_DB)
-        return 0
+    map_stats = html.find_all(class_='stats-row')[1].find_all('span')[1].text
 
-    spans = rows[1].find_all('span')
-    if len(spans) < 2:
-        Utils.status_cb(f"Map winrate spans missing for {url}", result_text, progress_var, "warn")
-        print(f"Map winrate spans missing for {url}")
-        DB.cache_set(db_key, 0, CACHE_DB)
-        return 0
-
-    map_stats = spans[1].text
-    if " / " not in map_stats:
-        Utils.status_cb(f"Unexpected map winrate format for {url}", result_text, progress_var, "warn")
-        print(f"Unexpected map winrate format for {url}")
-        DB.cache_set(db_key, 0, CACHE_DB)
-        return 0
+    #Utils.status_cb(f"Map stats not found for {url}", result_text, progress_var, "warn")
+    #Utils.status_cb(f"If this was caused by Cloudflare bot detection, please rerun prediction.", result_text, progress_var, "warn")
+    #print(f"Map stats not found for {url}")
+    #print(f"If this was caused by Cloudflare bot detection, please rerun prediction.")
 
     w, d, l = map(int, map_stats.split(" / "))
     winrate = 0 if (w + d + l) == 0 else round(w / (w + d + l) * 100, 1)
@@ -367,7 +348,7 @@ def get_recent_matches(name, team_id, date):
 
 
 # --------------------------
-# MAIN LOGIC
+# PREDICTION LOGIC
 # --------------------------
 def prepare_match_all_maps(url):
     db_key = f"match::{url}"
@@ -536,6 +517,25 @@ def process_match(match):
          'team2_avg_kd': (average_player_stats(match['team2']))[1]}
     return f
 
+def compute_series_probabilities(team1_win_prob_pct):
+    p = max(0.0, min(team1_win_prob_pct / 100, 1.0))
+    team1_bo1 = p
+    team1_bo3 = (p ** 3) + (3 * (p ** 2) * (1 - p))
+    team1_bo5 = (p ** 5) + (5 * (p ** 4) * (1 - p)) + (10 * (p ** 3) * ((1 - p) ** 2))
+
+    def _format(prob):
+        team1_pct = prob * 100
+        return {
+            "team1": team1_pct,
+            "team2": 100 - team1_pct,
+        }
+
+    return {
+        "BO1": _format(team1_bo1),
+        "BO3": _format(team1_bo3),
+        "BO5": _format(team1_bo5),
+    }
+
 def predict_all_maps():
     url = url_entry.get()
     if not url:
@@ -574,6 +574,18 @@ def predict_all_maps():
             team1_prob = f"{pred['team1_prob']:.2f}%".ljust(prob_col_width_team1)
             team2_prob = f"{pred['team2_prob']:.2f}%".ljust(prob_col_width_team2)
             result_text.insert(tk.END, f"{map_name} | {winner} | {team1_prob} | {team2_prob}\n")
+
+        series_predictions = compute_series_probabilities(avg_team1)
+        match_results['series_predictions'] = series_predictions
+        result_text.insert(tk.END, "Series Outcome Predictions:\n")
+        for series_type in ("BO1", "BO3", "BO5"):
+            probs = series_predictions[series_type]
+            series_winner = team1 if probs['team1'] >= probs['team2'] else team2
+            result_text.insert(
+                tk.END,
+                f"  {series_type}: {series_winner} ({probs['team1']:.1f}% vs {probs['team2']:.1f}%)\n",
+            )
+        result_text.insert(tk.END, "\n")
 
         progressbar.stop()
         progressbar.grid_remove()
