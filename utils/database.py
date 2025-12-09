@@ -1,4 +1,4 @@
-import pickle
+import json
 import tkinter as tk
 from datetime import datetime
 import sqlite3
@@ -15,8 +15,19 @@ class Database:
     @staticmethod
     def initialize_cache_db(db):
         conn, cursor = Database.get_db(db)
-        cursor.execute("CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value BLOB, timestamp REAL)")
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value TEXT, timestamp REAL)"
+        )
         conn.commit()
+
+        cursor.execute("PRAGMA user_version")
+        version = cursor.fetchone()[0]
+
+        if version < 1:
+            cursor.execute("DELETE FROM cache")
+            cursor.execute("PRAGMA user_version = 1")
+            conn.commit()
+
         conn.close()
 
     @staticmethod
@@ -38,12 +49,19 @@ class Database:
             Database.cache_delete(db_key, db)
             return None
 
-        return pickle.loads(value)
+        try:
+            if isinstance(value, bytes):
+                value = value.decode("utf-8")
+            return json.loads(value)
+        except (json.JSONDecodeError, UnicodeDecodeError, TypeError):
+            Database.cache_delete(db_key, db)
+            return None
 
     @staticmethod
     def cache_set(db_key, value, db):
         conn, cursor = Database.get_db(db)
-        blob = pickle.dumps(value)
+        safe_value = Database._ensure_json_serializable(value)
+        blob = json.dumps(safe_value, ensure_ascii=False)
         ts = datetime.now().timestamp()
         cursor.execute("REPLACE INTO cache (key, value, timestamp) VALUES (?, ?, ?)", (db_key, blob, ts))
         conn.commit()
@@ -74,3 +92,18 @@ class Database:
         stats_window.title("Cache Statistics")
         tk.Label(stats_window, text=f"Cached Entries: {count}").pack()
         tk.Label(stats_window, text=f"Database Size: {size / 1024:.2f} KB").pack()
+
+    @staticmethod
+    def _ensure_json_serializable(value):
+        if isinstance(value, dict):
+            return {k: Database._ensure_json_serializable(v) for k, v in value.items()}
+        if isinstance(value, (list, tuple, set)):
+            return [Database._ensure_json_serializable(v) for v in value]
+        if hasattr(value, "item"):
+            try:
+                return value.item()
+            except Exception:
+                pass
+        if isinstance(value, (str, int, float, bool)) or value is None:
+            return value
+        return str(value)

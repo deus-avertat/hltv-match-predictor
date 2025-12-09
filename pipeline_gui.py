@@ -108,6 +108,34 @@ def _current_settings_snapshot(theme_override=None):
         theme_override or THEME_PREFERENCE,
     )
 
+def _extract_training_metadata(model_obj):
+    """Try to extract training metadata/metrics from a model or bundle.
+
+    Supports either attributes on the object (e.g., ``training_metadata``)
+    or dictionary-style bundles that include a ``metadata`` section.
+    """
+    candidate_dicts = []
+
+    attr_keys = ["training_metadata", "model_metadata", "metadata", "info", "model_info"]
+    for key in attr_keys:
+        if hasattr(model_obj, key):
+            attr_val = getattr(model_obj, key)
+            if isinstance(attr_val, dict) and attr_val:
+                candidate_dicts.append(attr_val)
+
+    if isinstance(model_obj, dict):
+        for key in attr_keys + ["training_info", "training_details"]:
+            meta_val = model_obj.get(key)
+            if isinstance(meta_val, dict) and meta_val:
+                candidate_dicts.append(meta_val)
+
+    # Return the first non-empty metadata dict discovered
+    for meta in candidate_dicts:
+        if meta:
+            return meta
+    return None
+
+
 def _format_model_metadata(path):
     metadata = {"path": os.path.abspath(path) if path else ""}
 
@@ -127,6 +155,10 @@ def _format_model_metadata(path):
             "estimator": type(model_obj).__name__,
             "estimator_module": getattr(model_obj, "__module__", ""),
         })
+
+        training_meta = _extract_training_metadata(model_obj)
+        if training_meta:
+            metadata["training_metadata"] = training_meta
     except Exception as e:
         metadata["error"] = f"Failed to read model metadata: {e}"
 
@@ -137,13 +169,28 @@ def _model_metadata_text(metadata):
     if "error" in metadata:
         return f"Status: {metadata['error']}\nPath: {metadata.get('path', 'N/A')}"
 
-    return "\n".join([
+    lines = [
         f"Path: {metadata['path']}",
         f"Estimator: {metadata.get('estimator', 'Unknown')}",
         f"Module: {metadata.get('estimator_module', 'Unknown')}",
         f"Size: {metadata.get('size_mb', '0')} MB",
         f"Last Modified: {metadata.get('modified', 'Unknown')}",
-    ])
+    ]
+
+    training_meta = metadata.get("training_metadata")
+    if training_meta:
+        lines.append("Training Details:")
+        for key, value in training_meta.items():
+            if isinstance(value, dict):
+                lines.append(f"  {key}:")
+                for sub_key, sub_val in value.items():
+                    lines.append(f"    {sub_key}: {sub_val}")
+            else:
+                lines.append(f"  {key}: {value}")
+    else:
+        lines.append("Training Details: Not available")
+
+    return "\n".join(lines)
 
 
 # --------------------------
@@ -153,6 +200,7 @@ month_dict = Dictionary.month_dict
 map_player_dict = Dictionary.map_player_dict
 map_team_dict = Dictionary.map_team_dict
 reverse_map_team_dict = {v: k for k, v in map_team_dict.items()}
+map_selection_vars = {}
 
 # --------------------------
 # CHROME DRIVER
@@ -350,8 +398,10 @@ def get_recent_matches(name, team_id, date):
 # --------------------------
 # PREDICTION LOGIC
 # --------------------------
-def prepare_match_all_maps(url):
-    db_key = f"match::{url}"
+def prepare_match_all_maps(url, maps_to_include=None):
+    maps_to_use = list(maps_to_include) if maps_to_include else list(map_team_dict.keys())
+    cache_key_suffix = ",".join(sorted(maps_to_use)) or "none"
+    db_key = f"match::{url}::maps={cache_key_suffix}"
     cached = DB.cache_get(db_key, CACHE_DB, CACHE_EXPIRY_HOURS)
     if cached is not None:
         if Utils.status_cb:
@@ -420,7 +470,7 @@ def prepare_match_all_maps(url):
         Utils.status_cb("Fetching map stats and running predictions...", result_text, progress_var,  level="good")
 
     predictions = []
-    for map_name in map_team_dict.keys():
+    for map_name in maps_to_use:
         if Utils.status_cb:
             Utils.status_cb(f"Processing map {map_name}...", result_text, progress_var)
         map_code = map_team_dict[map_name]
@@ -458,14 +508,14 @@ def prepare_match_all_maps(url):
 
         features = process_match(match_data)
         probabilities = model.predict_proba(pd.DataFrame([features]))[0]
-        t1p = probabilities[1] * 100
-        t2p = probabilities[0] * 100
+        t1p = float(probabilities[1]) * 100
+        t2p = float(probabilities[0]) * 100
         winner = team1_name if t1p > t2p else team2_name
         predictions.append({"map": map_name, "predicted_winner": winner, "team1_prob": t1p, "team2_prob": t2p})
 
     match_code = url.split('/')[-2]
     output = {"match_code": match_code, "date": date.strftime('%Y-%m-%d'), "teams": [team1_name, team2_name],
-              "predictions": predictions}
+              "predictions": predictions, "maps_evaluated": maps_to_use}
 
     if Utils.status_cb:
         Utils.status_cb("Caching match data and finishing...", result_text, progress_var, level="good")
@@ -536,10 +586,17 @@ def compute_series_probabilities(team1_win_prob_pct):
         "BO5": _format(team1_bo5),
     }
 
+def _selected_maps():
+    return [name for name, var in map_selection_vars.items() if var.get()]
+
 def predict_all_maps():
     url = url_entry.get()
     if not url:
         result_text.insert(tk.END, "Please enter a URL.\n")
+        return
+    selected_maps = _selected_maps()
+    if not selected_maps:
+        result_text.insert(tk.END, "Please select at least one map to evaluate.\n")
         return
     result_text.delete(1.0, tk.END)  # Clear previous results
     if Utils.status_cb:
@@ -548,13 +605,18 @@ def predict_all_maps():
     progressbar.start(10)
 
     try:
-        match_results = prepare_match_all_maps(url)
+        match_results = prepare_match_all_maps(url, selected_maps)
         team1, team2 = match_results['teams']
         result_text.insert(tk.END, f"Match: {team1} vs {team2} on {match_results['date']}\n")
         avg_team1 = np.mean([p['team1_prob'] for p in match_results['predictions']])
         avg_team2 = np.mean([p['team2_prob'] for p in match_results['predictions']])
         overall_winner = team1 if avg_team1 > avg_team2 else team2
         result_text.insert(tk.END, f"Overall Winner Prediction: {overall_winner} ({avg_team1:.1f}% vs {avg_team2:.1f}%)\n\n")
+        evaluated_maps = match_results.get('maps_evaluated', selected_maps)
+        result_text.insert(tk.END, f"Maps evaluated: {', '.join(evaluated_maps)}\n")
+        if not match_results['predictions']:
+            result_text.insert(tk.END, "No map predictions were generated.\n")
+            return
 
         # Calculate column widths dynamically
         winner_col_width = max(len('Predicted Winner'), len(team1), len(team2))
@@ -829,6 +891,14 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
         except Exception as e:
             messagebox.showerror("Error", f"Error opening stats GUI: {e}")
 
+
+    def refresh_cached_stats():
+        if not messagebox.askyesno("Refresh Cached Stats", "Clear all cached stats so they can be refreshed?"):
+            return
+        DB.clear_cache(CACHE_DB, result_text, progress_var)
+        Utils.status_cb("Cache cleared. Fresh data will be fetched on the next run.", result_text, progress_var,
+                        level="info")
+
     # Menu Bar
     menubar = tk.Menu(root)
     menubar.config(fg="white")
@@ -843,6 +913,7 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
     # Data Menu
     data_menu = tk.Menu(menubar, tearoff=False)
     menubar.add_cascade(label="Data", menu=data_menu)
+    data_menu.add_command(label="Refresh Cached Stats", command=refresh_cached_stats)
     data_menu.add_command(label="HLTV Stats", command=open_stats_window)
 
     # Theme Menu
@@ -878,6 +949,29 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
     url_entry = tk.Entry(root, width=50)
     url_entry.pack()
 
+    maps_frame = ttk.LabelFrame(root, text="Maps to Include")
+    maps_frame.pack(padx=10, pady=5, fill="x")
+
+    maps_inner = ttk.Frame(maps_frame)
+    maps_inner.pack(padx=5, pady=5, fill="x")
+
+
+    def set_all_maps(value):
+        for var in map_selection_vars.values():
+            var.set(value)
+
+
+    for idx, map_name in enumerate(map_team_dict.keys()):
+        var = tk.BooleanVar(value=True)
+        map_selection_vars[map_name] = var
+        chk = ttk.Checkbutton(maps_inner, text=map_name, variable=var)
+        chk.grid(row=idx // 3, column=idx % 3, padx=5, pady=2, sticky="w")
+
+    maps_actions = ttk.Frame(maps_frame)
+    maps_actions.pack(padx=5, pady=(0, 5), fill="x")
+    ttk.Button(maps_actions, text="Select All", command=lambda: set_all_maps(True)).pack(side="left", padx=2)
+    ttk.Button(maps_actions, text="Deselect All", command=lambda: set_all_maps(False)).pack(side="left", padx=2)
+
     predict_button = ttk.Button(root, text="Predict All Maps", style="Accent.TButton",
                                 command=lambda: (clear_graph(), threading.Thread(target=predict_all_maps).start()))
     predict_button.pack(pady=5)
@@ -885,8 +979,8 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
     # Set monospaced font and increased width
     result_text = tk.Text(root, height=20, width=100, font=('Courier', 10))
     result_text.tag_config('good', background='green')
-    result_text.tag_config('info', background='white')
-    result_text.tag_config('warn', background='yellow3')
+    result_text.tag_config('info', background='blue2')
+    result_text.tag_config('warn', background='yellow4')
     result_text.tag_config('error', background='red3')
     result_text.pack()
 
