@@ -12,7 +12,8 @@ class Utils:
     @staticmethod
     def status_cb(msg, result_text, progress_var, level='good'):
         timestamp = datetime.now().strftime('%H:%M:%S')
-        line = f"[{timestamp}] {msg}\n"
+
+        line = f"[{timestamp}] - [{level}] {msg}\n"
         tag = 'good' if level == 'good' else (
             'info' if level == 'info' else ('warn' if level == 'warn' else 'error'))  # Horrid way to code this :>
         result_text.insert(tk.END, line, tag)

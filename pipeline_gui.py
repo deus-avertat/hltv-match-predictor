@@ -152,6 +152,11 @@ def _format_model_metadata(path):
         })
 
         model_obj = joblib.load(path)
+        missing_attrs = [attr for attr in ("predict_proba",) if not hasattr(model_obj, attr)]
+        if missing_attrs:
+            metadata["error"] = f"Model missing required attributes: {', '.join(missing_attrs)}"
+            return metadata
+
         metadata.update({
             "estimator": type(model_obj).__name__,
             "estimator_module": getattr(model_obj, "__module__", ""),
@@ -1084,9 +1089,60 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
     root.protocol("WM_DELETE_WINDOW", on_closing)
 
     def load_model_file():
-        if not os.path.isfile(MODEL_DIR):
-            raise FileNotFoundError(f"Model file not found at {MODEL_DIR}")
-        return joblib.load(MODEL_DIR)
+        required_attrs = ("predict_proba",)
+
+        def _attempt_load(path):
+            if not os.path.isfile(path):
+                raise FileNotFoundError(f"Model file not found at {path}")
+
+            try:
+                model_obj = joblib.load(path)
+            except Exception as exc:
+                raise RuntimeError(f"Failed to deserialize the model: {exc}") from exc
+
+            missing = [attr for attr in required_attrs if not hasattr(model_obj, attr)]
+            if missing:
+                raise RuntimeError(f"Model missing required attributes: {', '.join(missing)}")
+
+            return model_obj
+
+        current_path = MODEL_DIR
+
+        while True:
+            try:
+                loaded_model = _attempt_load(current_path)
+                if current_path != MODEL_DIR:
+                    persist_settings({
+                        **_current_settings_snapshot(theme_var.get()),
+                        "model_path": current_path,
+                    })
+                return loaded_model
+            except Exception as exc:
+                retry = messagebox.askyesno(
+                    "Model Load Error",
+                    (
+                        "Failed to load the prediction model from:\n"
+                        f"{current_path}\n\n{exc}\n\n"
+                        "Would you like to select a different model file?"
+                    ),
+                )
+
+                if not retry:
+                    raise
+
+                selected = filedialog.askopenfilename(
+                    title="Select Model File",
+                    filetypes=[("Pickle Files", "*.pkl"), ("All Files", "*.*")],
+                )
+
+                if not selected:
+                    messagebox.showwarning(
+                        "Model Selection Cancelled",
+                        "No model file was selected. Please choose a model to continue.",
+                    )
+                    continue
+
+                current_path = selected
 
     # Load the model
     model = load_model_file()
