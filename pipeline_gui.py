@@ -19,6 +19,7 @@ from utils.database import Database as DB
 from utils.dictionary import Dictionary
 from utils.driver import HTMLUtils, Driver
 from utils.helpers import Utils, Cache, Settings
+from utils.ui import attach_tooltip
 
 # --------------------------
 # GLOBAL VARS
@@ -764,6 +765,9 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
 
     # Windows
     def open_settings_window():
+        original_theme = theme_var.get()
+        settings_saved = False
+
         win = tk.Toplevel(root)
         win.title("Settings")
         win.geometry("430x620")
@@ -775,34 +779,60 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
         # Cache Expiry
         tk.Label(win, text="Cache Expiry (hours):").pack()
         expiry_var = tk.StringVar(value=str(settings.get("cache_expiry_hours", CACHE_EXPIRY_HOURS)))
-        tk.Entry(win, textvariable=expiry_var).pack()
+        expiry_entry = tk.Entry(win, textvariable=expiry_var)
+        expiry_entry.pack()
+        attach_tooltip(expiry_entry, "How long cached HLTV data remains valid before refresh (in hours).")
 
         # Cache Directory
         tk.Label(win, text="Cache DB Path:").pack()
         cache_var = tk.StringVar(value=settings.get("cache_db_path", CACHE_DB))
         cache_entry = tk.Entry(win, textvariable=cache_var, width=40)
         cache_entry.pack()
-        ttk.Button(win, text="Browse", style="Accent.TButton", command=lambda: cache_var.set(filedialog.askopenfilename())).pack(pady=2)
+        attach_tooltip(cache_entry, "Location of the SQLite cache file used to store scraped data.")
+        browse_cache_btn = ttk.Button(win, text="Browse", style="Accent.TButton",
+                                      command=lambda: cache_var.set(filedialog.askopenfilename()))
+        browse_cache_btn.pack(pady=2)
+        attach_tooltip(browse_cache_btn, "Select a different cache database file.")
 
         # Model Directory
         tk.Label(win, text="Model File (.pkl):").pack()
         model_var = tk.StringVar(value=settings.get("model_path", MODEL_DIR))
         model_entry = tk.Entry(win, textvariable=model_var, width=40)
         model_entry.pack()
-        ttk.Button(win, text="Browse", style="Accent.TButton", command=lambda: model_var.set(filedialog.askopenfilename())).pack(pady=2)
+        attach_tooltip(model_entry, "Path to the trained prediction model (.pkl) used for probability estimates.")
+        browse_model_btn = ttk.Button(win, text="Browse", style="Accent.TButton",
+                                      command=lambda: model_var.set(filedialog.askopenfilename()))
+        browse_model_btn.pack(pady=2)
+        attach_tooltip(browse_model_btn, "Choose a different model file to load.")
 
         # Headless Mode
         headless_var = tk.BooleanVar(value=settings.get("headless", HEADLESS_MODE))
-        ttk.Checkbutton(win, text="Headless Mode", variable=headless_var).pack(pady=5)
+        headless_check = ttk.Checkbutton(win, text="Headless Mode", variable=headless_var)
+        headless_check.pack(pady=5)
+        attach_tooltip(headless_check, "Enable to run the browser driver without opening a visible window.")
 
         # Theme Preference
         tk.Label(win, text="Theme:").pack(pady=(10, 2))
         theme_frame = ttk.Frame(win)
         theme_frame.pack(pady=2)
         theme_choice = tk.StringVar(value=settings.get("theme", theme_var.get()))
-        ttk.Radiobutton(theme_frame, text="System", value="system", variable=theme_choice).pack(side="left", padx=5)
-        ttk.Radiobutton(theme_frame, text="Light", value="light", variable=theme_choice).pack(side="left", padx=5)
-        ttk.Radiobutton(theme_frame, text="Dark", value="dark", variable=theme_choice).pack(side="left", padx=5)
+        def preview_theme():
+            apply_theme(theme_choice.get(), persist_choice=False)
+
+        theme_system_rb = ttk.Radiobutton(theme_frame, text="System", value="system", variable=theme_choice,
+                                           command=preview_theme)
+        theme_light_rb = ttk.Radiobutton(theme_frame, text="Light", value="light", variable=theme_choice,
+                                          command=preview_theme)
+        theme_dark_rb = ttk.Radiobutton(theme_frame, text="Dark", value="dark", variable=theme_choice,
+                                         command=preview_theme)
+
+        theme_system_rb.pack(side="left", padx=5)
+        theme_light_rb.pack(side="left", padx=5)
+        theme_dark_rb.pack(side="left", padx=5)
+
+        attach_tooltip(theme_system_rb, "Match the application theme to your operating system setting.")
+        attach_tooltip(theme_light_rb, "Preview a light theme without immediately saving the choice.")
+        attach_tooltip(theme_dark_rb, "Preview a dark theme without immediately saving the choice.")
 
         # Model Metadata
         model_info_frame = ttk.LabelFrame(win, text="Model Info")
@@ -840,6 +870,8 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
             if selected:
                 model_var.set(selected)
                 refresh_model_info()
+        attach_tooltip(model_info_frame, "Review metadata about the currently selected model file.")
+        attach_tooltip(model_info_content, "Model path, estimator, size, and available training details.")
 
         ttk.Button(model_info_frame, text="Refresh Metadata", style="Accent.TButton", command=refresh_model_info).pack(
             side="left", padx=(10, 5), pady=(0, 10)
@@ -848,9 +880,16 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
             side="left", padx=(0, 10), pady=(0, 10)
         )
 
+        def close_settings():
+            if not settings_saved:
+                apply_theme(original_theme, persist_choice=False)
+                theme_var.set(original_theme)
+            win.destroy()
+
         refresh_model_info()
 
         def save_settings():
+            nonlocal settings_saved
             new_settings = {
                 "cache_expiry_hours": expiry_var.get(),
                 "cache_db_path": cache_var.get(),
@@ -869,10 +908,12 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
             refresh_model_info()
             stop_driver()
             Utils.status_cb("Settings updated and saved.", result_text, progress_var, level="good")
+            settings_saved = True
             win.destroy()
 
         ttk.Button(win, text="Save Settings", style="Accent.TButton", command=save_settings).pack(pady=10)
-        ttk.Button(win, text="Close", style="Accent.TButton", command=win.destroy).pack(pady=5)
+        ttk.Button(win, text="Close", style="Accent.TButton", command=close_settings).pack(pady=5)
+        win.protocol("WM_DELETE_WINDOW", close_settings)
 
 
     def close_main_window():
@@ -1015,14 +1056,17 @@ if os.environ.get("HLTV_SKIP_GUI") != "1":
     spider_chart_button.grid(row=0, column=1, padx=5, pady=5)
 
     # Progress Bar
-    progress_frame = tk.Frame(root)
-    progress_frame.pack()
+    progress_frame = ttk.LabelFrame(root, text="Progress")
+    progress_frame.pack(fill="x", padx=10, pady=5)
     progress_var = tk.StringVar(value="Idle")
-    progress_label = tk.Label(progress_frame, textvariable=progress_var)
-    progress_label.grid(row=0, column=0, padx=5, pady=5)
+    status_label = ttk.Label(progress_frame, text="Current Step:")
+    status_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+    progress_label = ttk.Label(progress_frame, textvariable=progress_var, wraplength=420, justify="left")
+    progress_label.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 
     progressbar = ttk.Progressbar(progress_frame, mode="indeterminate")
-    progressbar.grid(row=0, column=1, padx=5, pady=5)
+    progressbar.grid(row=1, column=0, columnspan=2, padx=5, pady=(0, 5), sticky="ew")
+    progress_frame.columnconfigure(1, weight=1)
 
     graph_frame = tk.Frame(root)
     graph_frame.pack(fill='both', expand=True)
